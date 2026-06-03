@@ -946,566 +946,573 @@
                 </div>
             </div>
         </div>
-
-        <div id="modal">
-            <div class="modal-box">
-                <div class="modal-title">일지를 삭제할까요?</div>
-                <div class="modal-sub" id="modal-sub"></div>
-                <div class="modal-actions">
-                    <button class="btn-cancel" id="modal-cancel">취소</button>
-                    <button class="btn-confirm-del" id="modal-confirm">삭제</button>
-                </div>
+    </div>
+    <div id="modal">
+        <div class="modal-box">
+            <div class="modal-title">일지를 삭제할까요?</div>
+            <div class="modal-sub" id="modal-sub"></div>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="modal-cancel">취소</button>
+                <button class="btn-confirm-del" id="modal-confirm">삭제</button>
             </div>
         </div>
+    </div>
 
-        <div id="toast"></div>
+    <div id="toast"></div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-        <script>
-            const API_BASE = "https://devlog-api.corskep.workers.dev";
-            const PAGE_SIZE = 20;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        const API_BASE = "https://devlog-api.corskep.workers.dev";
+        const PAGE_SIZE = 20;
 
-            let entries = [];
-            let currentId = null;
-            let toastTimer = null;
-            let editTags = [];
-            let activeTag = "";
-            let currentPage = 1;
+        let entries = [];
+        let currentId = null;
+        let toastTimer = null;
+        let editTags = [];
+        let activeTag = "";
+        let currentPage = 1;
 
-            function $(id) {
-                return document.getElementById(id);
-            }
+        function $(id) {
+            return document.getElementById(id);
+        }
 
-            function fmtDate(ts) {
-                return new Date(ts).toLocaleDateString("ko-KR", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit"
-                }).replace(/\. /g, "-").replace(".", "");
-            }
+        function fmtDate(ts) {
+            const d = new Date(ts);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+        }
 
-            function esc(str = "") {
-                return String(str)
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;");
-            }
+        function esc(str = "") {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
 
-            function stripText(html = "") {
-                const tmp = document.createElement("div");
-                tmp.innerHTML = html;
-                return tmp.textContent.replace(/\s+/g, " ").trim();
-            }
+        function stripText(html = "") {
+            const tmp = document.createElement("div");
+            tmp.innerHTML = html;
+            return tmp.textContent.replace(/\s+/g, " ").trim();
+        }
 
-            function preview(body) {
-                return stripText(body).slice(0, 100) || "내용 없음";
-            }
+        function preview(body) {
+            return stripText(body).slice(0, 100) || "내용 없음";
+        }
 
-            function toast(msg) {
-                const el = $("toast");
-                el.textContent = msg;
-                el.style.display = "block";
-                clearTimeout(toastTimer);
-                toastTimer = setTimeout(() => el.style.display = "none", 2000);
-            }
+        function toast(msg) {
+            const el = $("toast");
+            el.textContent = msg;
+            el.style.display = "block";
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.style.display = "none", 2000);
+        }
 
-            function getFilteredEntries() {
-                const q = $("search-input").value.trim().toLowerCase();
-                return entries.filter(entry => {
-                    const tags = entry.tags || [];
-                    if (activeTag && !tags.includes(activeTag)) return false;
-                    if (!q) return true;
+        function getFilteredEntries() {
+            const q = $("search-input").value.trim().toLowerCase();
+            return entries.filter(entry => {
+                const tags = entry.tags || [];
+                if (activeTag && !tags.includes(activeTag)) return false;
+                if (!q) return true;
 
-                    const haystack = [
-                        entry.title || "",
-                        stripText(entry.body || ""),
-                        tags.join(" ")
-                    ].join(" ").toLowerCase();
-                    return haystack.includes(q);
-                });
-            }
+                const haystack = [
+                    entry.title || "",
+                    stripText(entry.body || ""),
+                    tags.join(" ")
+                ].join(" ").toLowerCase();
+                return haystack.includes(q);
+            });
+        }
 
-            function renderTagFilters() {
-                const counts = new Map();
-                entries.forEach(entry => {
-                    (entry.tags || []).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1));
-                });
+        function renderTagFilters() {
+            const counts = new Map();
+            entries.forEach(entry => {
+                (entry.tags || []).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1));
+            });
 
-                $("tag-filter-bar").innerHTML = [...counts.entries()]
-                    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-                    .map(([tag, count]) => `
-                        <button class="tag-filter ${activeTag === tag ? "active" : ""}" type="button" data-tag="${esc(tag)}">
-                            #${esc(tag)} ${count}
-                        </button>
-                    `).join("");
-
-                $("tag-filter-bar").querySelectorAll(".tag-filter").forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        activeTag = btn.dataset.tag;
-                        currentPage = 1;
-                        renderList();
-                    });
-                });
-
-                $("active-filter").classList.toggle("visible", !!activeTag);
-                $("active-filter-name").textContent = activeTag ? `#${activeTag}` : "";
-            }
-
-            function renderList() {
-                const filtered = getFilteredEntries();
-                const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-                if (currentPage > pageCount) currentPage = pageCount;
-
-                const start = (currentPage - 1) * PAGE_SIZE;
-                const visible = filtered.slice(start, start + PAGE_SIZE);
-                renderTagFilters();
-
-                if (visible.length === 0) {
-                    $("view-list").innerHTML = `
-          <div class="empty">
-            <div>[ ]</div>
-            <div>조건에 맞는 일지가 없습니다.</div>
-          </div>
-        `;
-                } else {
-                    $("view-list").innerHTML = visible.map(entry => {
-                        const tags = (entry.tags || []).map(tag => `<span class="tag">#${esc(tag)}</span>`).join("");
-                        return `
-                            <div class="card" data-id="${esc(entry.id)}">
-                                <div class="card-dot"></div>
-                                <div class="card-date">${fmtDate(entry.createdAt)}</div>
-                                <div class="card-title">${esc(entry.title)}</div>
-                                <div class="card-preview">${esc(preview(entry.body))}</div>
-                                ${tags ? `<div class="card-tag">${tags}</div>` : ""}
-                            </div>
-                        `;
-                    }).join("");
-                }
-
-                $("view-list").querySelectorAll(".card").forEach(card => {
-                    card.addEventListener("click", () => showDetail(card.dataset.id));
-                });
-
-                renderPagination(pageCount, filtered.length);
-            }
-
-            function renderPagination(pageCount, totalCount) {
-                const el = $("pagination");
-                if (totalCount <= PAGE_SIZE) {
-                    el.classList.remove("visible");
-                    el.innerHTML = "";
-                    return;
-                }
-
-                const pages = Array.from({ length: pageCount }, (_, index) => index + 1);
-                el.classList.add("visible");
-                el.innerHTML = `
-                    <button class="page-btn" type="button" data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>‹</button>
-                    ${pages.map(page => `
-                        <button class="page-btn ${page === currentPage ? "active" : ""}" type="button" data-page="${page}">
-                            ${page}
-                        </button>
-                    `).join("")}
-                    <button class="page-btn" type="button" data-page="${currentPage + 1}" ${currentPage === pageCount ? "disabled" : ""}>›</button>
-                `;
-
-                el.querySelectorAll(".page-btn:not(:disabled)").forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        currentPage = Number(btn.dataset.page);
-                        renderList();
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                    });
-                });
-            }
-
-            function showList() {
-                currentId = null;
-                $("btn-new").style.display = "";
-                $("list-tools").style.display = "grid";
-                $("tag-filter-bar").style.display = "flex";
-                $("view-list").style.display = "grid";
-                $("view-detail").style.display = "none";
-                renderList();
-            }
-
-            function showDetail(id) {
-                currentId = id;
-                $("btn-new").style.display = "none";
-                $("list-tools").style.display = "none";
-                $("tag-filter-bar").style.display = "none";
-                $("view-list").style.display = "none";
-                $("pagination").classList.remove("visible");
-                $("view-detail").style.display = "block";
-                if (id) renderRead();
-                else renderEdit(null);
-            }
-
-            function highlightCode(root) {
-                root.querySelectorAll("pre").forEach(pre => {
-                    if (pre.querySelector("code")) return;
-                    const code = document.createElement("code");
-                    code.textContent = pre.textContent;
-                    pre.textContent = "";
-                    pre.appendChild(code);
-                });
-                root.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
-            }
-
-            function applyHashHeadings(root) {
-                const blocks = [...root.querySelectorAll("div, p")];
-                let index = 0;
-
-                blocks.forEach(block => {
-                    if (block.closest("pre")) return;
-
-                    const text = block.textContent.trim();
-                    const match = text.match(/^(#{1,2})\s+(.+)$/);
-                    if (!match) return;
-
-                    const level = match[1].length;
-                    const heading = document.createElement(level === 1 ? "h2" : "h3");
-                    heading.className = level === 1 ? "body-heading-1" : "body-heading-2";
-                    heading.dataset.headingLevel = String(level);
-                    heading.id = `body-heading-${++index}`;
-                    heading.textContent = match[2].trim();
-                    block.replaceWith(heading);
-                });
-            }
-
-            function renderHeadingNav() {
-                const headings = [...$("detail-body").querySelectorAll("[data-heading-level]")];
-                const nav = $("heading-nav");
-                const layout = $("read-layout");
-
-                if (headings.length === 0) {
-                    nav.classList.add("empty");
-                    layout.classList.add("no-nav");
-                    nav.innerHTML = "";
-                    return;
-                }
-
-                nav.classList.remove("empty");
-                layout.classList.remove("no-nav");
-                nav.innerHTML = `
-                    <div class="heading-nav-title">CONTENTS</div>
-                    ${headings.map(heading => `
-                        <button type="button" class="level-${heading.dataset.headingLevel}" data-target="${heading.id}">
-                            ${esc(heading.textContent)}
-                        </button>
-                    `).join("")}
-                `;
-
-                nav.querySelectorAll("button[data-target]").forEach(button => {
-                    button.addEventListener("click", () => {
-                        $(button.dataset.target)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    });
-                });
-            }
-
-            function renderRead() {
-                const entry = entries.find(x => x.id === currentId);
-                if (!entry) {
-                    showList();
-                    return;
-                }
-
-                $("section-read").style.display = "block";
-                $("section-edit").style.display = "none";
-
-                let dateStr = fmtDate(entry.createdAt);
-                if (entry.updatedAt !== entry.createdAt) {
-                    dateStr += `<span style="color:var(--text3);margin-left:10px">수정 ${fmtDate(entry.updatedAt)}</span>`;
-                }
-
-                $("detail-date").innerHTML = dateStr;
-                $("detail-title").textContent = entry.title;
-                $("detail-body").innerHTML = entry.body || "";
-                $("detail-tags").innerHTML = (entry.tags || [])
-                    .map(tag => `<button class="tag tag-link" type="button" data-tag="${esc(tag)}">#${esc(tag)}</button>`)
-                    .join("");
-
-                $("detail-tags").querySelectorAll(".tag-link").forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        activeTag = btn.dataset.tag;
-                        currentPage = 1;
-                        showList();
-                    });
-                });
-
-                applyHashHeadings($("detail-body"));
-                renderHeadingNav();
-                highlightCode($("detail-body"));
-            }
-
-            function renderEdit(id) {
-                const entry = id ? entries.find(x => x.id === id) : null;
-                $("section-read").style.display = "none";
-                $("section-edit").style.display = "block";
-                $("editor-title").value = entry ? entry.title : "";
-                $("editor-body").innerHTML = entry ? entry.body : "";
-                $("editor-body").setAttribute("data-placeholder",
-                    "오늘의 개발 일지를 작성하세요.\n\n버그 픽스, 새 기능, 배운 것, 막힌 부분을 자유롭게 기록해보세요."
-                );
-                editTags = entry ? [...(entry.tags || [])] : [];
-                renderTagChips();
-                $("editor-title").focus();
-            }
-
-            function renderTagChips() {
-                $("tag-chips").innerHTML = editTags.map((tag, index) => `
-                    <span class="tag-chip">#${esc(tag)}<button data-index="${index}" type="button">×</button></span>
+            $("tag-filter-bar").innerHTML = [...counts.entries()]
+                .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+                .map(([tag, count]) => `
+                    <button class="tag-filter ${activeTag === tag ? "active" : ""}" type="button" data-tag="${esc(tag)}">
+                        #${esc(tag)} ${count}
+                    </button>
                 `).join("");
 
-                $("tag-chips").querySelectorAll("button").forEach(btn => {
-                    btn.addEventListener("click", event => {
-                        event.stopPropagation();
-                        editTags.splice(Number(btn.dataset.index), 1);
-                        renderTagChips();
-                    });
+            $("tag-filter-bar").querySelectorAll(".tag-filter").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    activeTag = btn.dataset.tag;
+                    currentPage = 1;
+                    renderList();
                 });
+            });
+
+            $("active-filter").classList.toggle("visible", !!activeTag);
+            $("active-filter-name").textContent = activeTag ? `#${activeTag}` : "";
+        }
+
+        function renderList() {
+            const filtered = getFilteredEntries();
+            const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+            if (currentPage > pageCount) currentPage = pageCount;
+
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const visible = filtered.slice(start, start + PAGE_SIZE);
+            renderTagFilters();
+
+            if (visible.length === 0) {
+                $("view-list").innerHTML = `
+                    <div class="empty">
+                        <div>[ ]</div>
+                        <div>조건에 맞는 일지가 없습니다.</div>
+                    </div>
+                `;
+            } else {
+                $("view-list").innerHTML = visible.map(entry => {
+                    const tags = (entry.tags || []).map(tag => `<span class="tag">#${esc(tag)}</span>`).join("");
+                    return `
+                        <div class="card" data-id="${esc(entry.id)}">
+                            <div class="card-dot"></div>
+                            <div class="card-date">${fmtDate(entry.createdAt)}</div>
+                            <div class="card-title">${esc(entry.title)}</div>
+                            <div class="card-preview">${esc(preview(entry.body))}</div>
+                            ${tags ? `<div class="card-tag">${tags}</div>` : ""}
+                        </div>
+                    `;
+                }).join("");
             }
 
-            function addTag(raw) {
-                const tag = raw.trim().replace(/^#+/, "").replace(/\s+/g, "-").toLowerCase();
-                if (!tag || editTags.includes(tag)) return;
-                editTags.push(tag);
+            $("view-list").querySelectorAll(".card").forEach(card => {
+                card.addEventListener("click", () => showDetail(card.dataset.id));
+            });
+
+            renderPagination(pageCount, filtered.length);
+        }
+
+        function renderPagination(pageCount, totalCount) {
+            const el = $("pagination");
+            if (totalCount <= PAGE_SIZE) {
+                el.classList.remove("visible");
+                el.innerHTML = "";
+                return;
+            }
+
+            const pages = Array.from({ length: pageCount }, (_, index) => index + 1);
+            el.classList.add("visible");
+            el.innerHTML = `
+                <button class="page-btn" type="button" data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>‹</button>
+                ${pages.map(page => `
+                    <button class="page-btn ${page === currentPage ? "active" : ""}" type="button" data-page="${page}">
+                        ${page}
+                    </button>
+                `).join("")}
+                <button class="page-btn" type="button" data-page="${currentPage + 1}" ${currentPage === pageCount ? "disabled" : ""}>›</button>
+            `;
+
+            el.querySelectorAll(".page-btn:not(:disabled)").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    currentPage = Number(btn.dataset.page);
+                    renderList();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+            });
+        }
+
+        function showList() {
+            currentId = null;
+            $("btn-new").style.display = "";
+            $("list-tools").style.display = "grid";
+            $("tag-filter-bar").style.display = "flex";
+            $("view-list").style.display = "grid";
+            $("view-detail").style.display = "none";
+            renderList();
+        }
+
+        function showDetail(id) {
+            currentId = id;
+            $("btn-new").style.display = "none";
+            $("list-tools").style.display = "none";
+            $("tag-filter-bar").style.display = "none";
+            $("view-list").style.display = "none";
+            $("pagination").classList.remove("visible");
+            $("view-detail").style.display = "block";
+            if (id) renderRead();
+            else renderEdit(null);
+        }
+
+        function highlightCode(root) {
+            root.querySelectorAll("pre").forEach(pre => {
+                if (pre.querySelector("code")) return;
+                const code = document.createElement("code");
+                code.textContent = pre.textContent;
+                pre.textContent = "";
+                pre.appendChild(code);
+            });
+            root.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
+        }
+
+        function applyHashHeadings(root) {
+            const blocks = [...root.querySelectorAll("div, p")];
+            let index = 0;
+
+            blocks.forEach(block => {
+                if (block.closest("pre")) return;
+
+                const text = block.textContent.trim();
+                const match = text.match(/^(#{1,2})\s+(.+)$/);
+                if (!match) return;
+
+                const level = match[1].length;
+                const heading = document.createElement(level === 1 ? "h2" : "h3");
+                heading.className = level === 1 ? "body-heading-1" : "body-heading-2";
+                heading.dataset.headingLevel = String(level);
+                heading.id = `body-heading-${++index}`;
+                heading.textContent = match[2].trim();
+                block.replaceWith(heading);
+            });
+        }
+
+        function renderHeadingNav() {
+            const headings = [...$("detail-body").querySelectorAll("[data-heading-level]")];
+            const nav = $("heading-nav");
+            const layout = $("read-layout");
+
+            if (headings.length === 0) {
+                nav.classList.add("empty");
+                layout.classList.add("no-nav");
+                nav.innerHTML = "";
+                return;
+            }
+
+            nav.classList.remove("empty");
+            layout.classList.remove("no-nav");
+            nav.innerHTML = `
+                <div class="heading-nav-title">CONTENTS</div>
+                ${headings.map(heading => `
+                    <button type="button" class="level-${heading.dataset.headingLevel}" data-target="${heading.id}">
+                        ${esc(heading.textContent)}
+                    </button>
+                `).join("")}
+            `;
+
+            nav.querySelectorAll("button[data-target]").forEach(button => {
+                button.addEventListener("click", () => {
+                    $(button.dataset.target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            });
+        }
+
+        function renderRead() {
+            const entry = entries.find(x => x.id === currentId);
+            if (!entry) {
+                showList();
+                return;
+            }
+
+            $("section-read").style.display = "block";
+            $("section-edit").style.display = "none";
+
+            let dateStr = fmtDate(entry.createdAt);
+            if (entry.updatedAt !== entry.createdAt) {
+                dateStr += `<span style="color:var(--text3);margin-left:10px">수정 ${fmtDate(entry.updatedAt)}</span>`;
+            }
+
+            $("detail-date").innerHTML = dateStr;
+            $("detail-title").textContent = entry.title;
+            $("detail-body").innerHTML = entry.body || "";
+            $("detail-tags").innerHTML = (entry.tags || [])
+                .map(tag => `<button class="tag tag-link" type="button" data-tag="${esc(tag)}">#${esc(tag)}</button>`)
+                .join("");
+
+            $("detail-tags").querySelectorAll(".tag-link").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    activeTag = btn.dataset.tag;
+                    currentPage = 1;
+                    showList();
+                });
+            });
+
+            applyHashHeadings($("detail-body"));
+            renderHeadingNav();
+            highlightCode($("detail-body"));
+        }
+
+        function renderEdit(id) {
+            const entry = id ? entries.find(x => x.id === id) : null;
+            $("section-read").style.display = "none";
+            $("section-edit").style.display = "block";
+            $("editor-title").value = entry ? entry.title : "";
+            $("editor-body").innerHTML = entry ? entry.body : "";
+            $("editor-body").setAttribute("data-placeholder",
+                "오늘의 개발 일지를 작성하세요.\n\n버그 픽스, 새 기능, 배운 것, 막힌 부분을 자유롭게 기록해보세요."
+            );
+            editTags = entry ? [...(entry.tags || [])] : [];
+            renderTagChips();
+            $("editor-title").focus();
+        }
+
+        function renderTagChips() {
+            $("tag-chips").innerHTML = editTags.map((tag, index) => `
+                <span class="tag-chip">#${esc(tag)}<button data-index="${index}" type="button">×</button></span>
+            `).join("");
+
+            $("tag-chips").querySelectorAll("button").forEach(btn => {
+                btn.addEventListener("click", event => {
+                    event.stopPropagation();
+                    editTags.splice(Number(btn.dataset.index), 1);
+                    renderTagChips();
+                });
+            });
+        }
+
+        function addTag(raw) {
+            const tag = raw.trim().replace(/^#+/, "").replace(/\s+/g, "-").toLowerCase();
+            if (!tag || editTags.includes(tag)) return;
+            editTags.push(tag);
+            renderTagChips();
+        }
+
+        async function load() {
+            try {
+                const res = await fetch(`${API_BASE}/api/entries`);
+                const data = await res.json();
+                entries = (data.entries || []).filter(entry => entry.id);
+                entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderList();
+            } catch {
+                toast("데이터를 불러오지 못했습니다.");
+            }
+        }
+
+        async function save() {
+            const res = await fetch(`${API_BASE}/api/entries`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("devlog_token") || ""}`
+                },
+                body: JSON.stringify({ entries })
+            });
+
+            if (!res.ok) throw new Error("save failed");
+        }
+
+        function cleanEditorBody() {
+            const editor = $("editor-body");
+            if (editor.innerHTML === "<br>" || editor.innerHTML.trim() === "") {
+                editor.innerHTML = "";
+            }
+        }
+
+        $("tag-input-row").addEventListener("click", () => $("tag-input").focus());
+
+        $("tag-input").addEventListener("keydown", event => {
+            const val = event.target.value;
+            if (event.key === "Enter" || event.key === ",") {
+                event.preventDefault();
+                addTag(val);
+                event.target.value = "";
+            } else if (event.key === "Backspace" && !val && editTags.length) {
+                editTags.pop();
                 renderTagChips();
             }
+        });
 
-            async function load() {
-                try {
-                    const res = await fetch(`${API_BASE}/api/entries`);
-                    const data = await res.json();
-                    entries = (data.entries || []).filter(entry => entry.id);
-                    entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                    renderList();
-                } catch {
-                    toast("데이터를 불러오지 못했습니다.");
+        $("tag-input").addEventListener("blur", event => {
+            if (event.target.value.trim()) {
+                addTag(event.target.value);
+                event.target.value = "";
+            }
+        });
+
+        $("editor-body").addEventListener("input", cleanEditorBody);
+
+        $("btn-code-block").addEventListener("click", () => {
+            const editor = $("editor-body");
+            editor.focus();
+
+            const pre = document.createElement("pre");
+            pre.textContent = "";
+
+            const after = document.createElement("div");
+            after.innerHTML = "<br>";
+
+            const sel = window.getSelection();
+            if (sel.rangeCount && editor.contains(sel.anchorNode)) {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(after);
+                range.insertNode(pre);
+
+                const newRange = document.createRange();
+                newRange.setStart(pre, 0);
+                newRange.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+            } else {
+                editor.appendChild(pre);
+                editor.appendChild(after);
+            }
+        });
+
+        $("editor-body").addEventListener("keydown", function (event) {
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+
+            let node = sel.anchorNode;
+            let pre = null;
+            while (node && node !== this) {
+                if (node.nodeName === "PRE") {
+                    pre = node;
+                    break;
                 }
+                node = node.parentNode;
+            }
+            if (!pre) return;
+
+            if (event.key === "Escape") {
+                event.preventDefault();
+                const p = document.createElement("div");
+                p.innerHTML = "<br>";
+                pre.parentNode.insertBefore(p, pre.nextSibling);
+                const newRange = document.createRange();
+                newRange.setStart(p, 0);
+                newRange.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+            }
+        });
+
+        $("btn-new").addEventListener("click", () => showDetail(null));
+        $("btn-back").addEventListener("click", showList);
+        $("btn-edit").addEventListener("click", () => renderEdit(currentId));
+        $("btn-cancel").addEventListener("click", () => currentId ? renderRead() : showList());
+
+        $("search-input").addEventListener("input", () => {
+            currentPage = 1;
+            renderList();
+        });
+
+        $("clear-filter").addEventListener("click", () => {
+            activeTag = "";
+            currentPage = 1;
+            renderList();
+        });
+
+        $("btn-save").addEventListener("click", async () => {
+            const title = $("editor-title").value.trim();
+
+            const editorClone = $("editor-body").cloneNode(true);
+            editorClone.querySelectorAll("pre code").forEach(codeEl => {
+                const plain = codeEl.textContent;
+                const pre = codeEl.parentElement;
+                pre.textContent = plain;
+            });
+            const body = editorClone.innerHTML;
+            if (!title) {
+                toast("제목을 입력해주세요.");
+                return;
             }
 
-            async function save() {
-                const res = await fetch(`${API_BASE}/api/entries`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${sessionStorage.getItem("devlog_token") || ""}`
-                    },
-                    body: JSON.stringify({ entries })
+            const tagInput = $("tag-input");
+            if (tagInput.value.trim()) {
+                addTag(tagInput.value);
+                tagInput.value = "";
+            }
+
+            const now = Date.now();
+            if (currentId) {
+                entries = entries.map(entry => entry.id === currentId
+                    ? { ...entry, title, body, tags: [...editTags], updatedAt: now }
+                    : entry
+                );
+            } else {
+                currentId = String(now);
+                entries.unshift({
+                    id: currentId,
+                    title,
+                    body,
+                    tags: [...editTags],
+                    createdAt: now,
+                    updatedAt: now
+                });
+            }
+
+            try {
+                await save();
+                renderRead();
+                toast("저장되었습니다.");
+            } catch {
+                toast("저장에 실패했습니다. 다시 로그인해보세요.");
+            }
+        });
+
+        $("btn-delete").addEventListener("click", () => {
+            const entry = entries.find(x => x.id === currentId);
+            $("modal-sub").innerHTML = `"${esc(entry?.title || "")}"<br>삭제한 일지는 복구할 수 없습니다.`;
+            $("modal").classList.add("open");
+        });
+
+        $("modal-cancel").addEventListener("click", () => $("modal").classList.remove("open"));
+
+        $("modal-confirm").addEventListener("click", async () => {
+            entries = entries.filter(entry => entry.id !== currentId);
+            try {
+                await save();
+                $("modal").classList.remove("open");
+                showList();
+                toast("삭제되었습니다.");
+            } catch {
+                toast("삭제 저장에 실패했습니다.");
+            }
+        });
+
+        $("modal").addEventListener("click", event => {
+            if (event.target === $("modal")) {
+                $("modal").classList.remove("open");
+            }
+        });
+
+        $("btn-login").addEventListener("click", async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ password: $("pw-input").value })
                 });
 
-                if (!res.ok) throw new Error("save failed");
-            }
-
-            function cleanEditorBody() {
-                const editor = $("editor-body");
-                if (editor.innerHTML === "<br>" || editor.innerHTML.trim() === "") {
-                    editor.innerHTML = "";
-                }
-            }
-
-            $("tag-input-row").addEventListener("click", () => $("tag-input").focus());
-
-            $("tag-input").addEventListener("keydown", event => {
-                const val = event.target.value;
-                if (event.key === "Enter" || event.key === ",") {
-                    event.preventDefault();
-                    addTag(val);
-                    event.target.value = "";
-                } else if (event.key === "Backspace" && !val && editTags.length) {
-                    editTags.pop();
-                    renderTagChips();
-                }
-            });
-
-            $("tag-input").addEventListener("blur", event => {
-                if (event.target.value.trim()) {
-                    addTag(event.target.value);
-                    event.target.value = "";
-                }
-            });
-
-            $("editor-body").addEventListener("input", cleanEditorBody);
-
-            $("btn-code-block").addEventListener("click", () => {
-                const editor = $("editor-body");
-                editor.focus();
-
-                const pre = document.createElement("pre");
-                pre.textContent = "";
-
-                const after = document.createElement("div");
-                after.innerHTML = "<br>";
-
-                const sel = window.getSelection();
-                if (sel.rangeCount && editor.contains(sel.anchorNode)) {
-                    const range = sel.getRangeAt(0);
-                    range.deleteContents();
-                    range.insertNode(after);
-                    range.insertNode(pre);
-
-                    const newRange = document.createRange();
-                    newRange.setStart(pre, 0);
-                    newRange.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(newRange);
-                } else {
-                    editor.appendChild(pre);
-                    editor.appendChild(after);
-                }
-            });
-
-            $("editor-body").addEventListener("keydown", function (event) {
-                const sel = window.getSelection();
-                if (!sel.rangeCount) return;
-
-                let node = sel.anchorNode;
-                let pre = null;
-                while (node && node !== this) {
-                    if (node.nodeName === "PRE") {
-                        pre = node;
-                        break;
-                    }
-                    node = node.parentNode;
-                }
-                if (!pre) return;
-
-                if (event.key === "Escape") {
-                    event.preventDefault();
-                    const p = document.createElement("div");
-                    p.innerHTML = "<br>";
-                    pre.parentNode.insertBefore(p, pre.nextSibling);
-                    const newRange = document.createRange();
-                    newRange.setStart(p, 0);
-                    newRange.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(newRange);
-                }
-            });
-
-            $("btn-new").addEventListener("click", () => showDetail(null));
-            $("btn-back").addEventListener("click", showList);
-            $("btn-edit").addEventListener("click", () => renderEdit(currentId));
-            $("btn-cancel").addEventListener("click", () => currentId ? renderRead() : showList());
-
-            $("search-input").addEventListener("input", () => {
-                currentPage = 1;
-                renderList();
-            });
-
-            $("clear-filter").addEventListener("click", () => {
-                activeTag = "";
-                currentPage = 1;
-                renderList();
-            });
-
-            $("btn-save").addEventListener("click", async () => {
-                const title = $("editor-title").value.trim();
-                const body = $("editor-body").innerHTML;
-                if (!title) {
-                    toast("제목을 입력해주세요.");
+                if (!res.ok) {
+                    toast("비밀번호가 틀렸습니다.");
                     return;
                 }
 
-                const tagInput = $("tag-input");
-                if (tagInput.value.trim()) {
-                    addTag(tagInput.value);
-                    tagInput.value = "";
-                }
+                const data = await res.json();
+                sessionStorage.setItem("devlog_auth", "true");
+                sessionStorage.setItem("devlog_token", data.token);
+                $("login-screen").style.display = "none";
+                await load();
+                showList();
+                toast("반갑습니다.");
+            } catch {
+                toast("로그인 요청에 실패했습니다.");
+            }
+        });
 
-                const now = Date.now();
-                if (currentId) {
-                    entries = entries.map(entry => entry.id === currentId
-                        ? { ...entry, title, body, tags: [...editTags], updatedAt: now }
-                        : entry
-                    );
-                } else {
-                    currentId = String(now);
-                    entries.unshift({
-                        id: currentId,
-                        title,
-                        body,
-                        tags: [...editTags],
-                        createdAt: now,
-                        updatedAt: now
-                    });
-                }
+        $("pw-input").addEventListener("keydown", event => {
+            if (event.key === "Enter") $("btn-login").click();
+        });
 
-                try {
-                    await save();
-                    renderRead();
-                    toast("저장되었습니다.");
-                } catch {
-                    toast("저장에 실패했습니다. 다시 로그인해보세요.");
-                }
-            });
-
-            $("btn-delete").addEventListener("click", () => {
-                const entry = entries.find(x => x.id === currentId);
-                $("modal-sub").innerHTML = `"${esc(entry?.title || "")}"<br>삭제한 일지는 복구할 수 없습니다.`;
-                $("modal").classList.add("open");
-            });
-
-            $("modal-cancel").addEventListener("click", () => $("modal").classList.remove("open"));
-
-            $("modal-confirm").addEventListener("click", async () => {
-                entries = entries.filter(entry => entry.id !== currentId);
-                try {
-                    await save();
-                    $("modal").classList.remove("open");
-                    showList();
-                    toast("삭제되었습니다.");
-                } catch {
-                    toast("삭제 저장에 실패했습니다.");
-                }
-            });
-
-            $("modal").addEventListener("click", event => {
-                if (event.target === $("modal")) {
-                    $("modal").classList.remove("open");
-                }
-            });
-
-            $("btn-login").addEventListener("click", async () => {
-                try {
-                    const res = await fetch(`${API_BASE}/api/login`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ password: $("pw-input").value })
-                    });
-
-                    if (!res.ok) {
-                        toast("비밀번호가 틀렸습니다.");
-                        return;
-                    }
-
-                    const data = await res.json();
-                    sessionStorage.setItem("devlog_auth", "true");
-                    sessionStorage.setItem("devlog_token", data.token);
-                    $("login-screen").style.display = "none";
-                    await load();
-                    showList();
-                    toast("반갑습니다.");
-                } catch {
-                    toast("로그인 요청에 실패했습니다.");
-                }
-            });
-
-            $("pw-input").addEventListener("keydown", event => {
-                if (event.key === "Enter") $("btn-login").click();
-            });
-
-            (() => {
-                if (sessionStorage.getItem("devlog_auth") === "true" && sessionStorage.getItem("devlog_token")) {
-                    $("login-screen").style.display = "none";
-                    load();
-                    showList();
-                } else {
-                    $("login-screen").style.display = "flex";
-                }
-            })();
-        </script>
+        (() => {
+            if (sessionStorage.getItem("devlog_auth") === "true" && sessionStorage.getItem("devlog_token")) {
+                $("login-screen").style.display = "none";
+                load();
+                showList();
+            } else {
+                $("login-screen").style.display = "flex";
+            }
+        })();
+    </script>
 </body>
 
 </html>
