@@ -650,8 +650,8 @@
             blocks.forEach(block => {
                 if (block.closest("pre")) return;
 
-                const text = block.textContent.trim();
-                const match = text.match(/^(#{1,2})\s+(.+)$/);
+                const text = block.textContent.replace(/\u00a0/g, " ").trim();
+                const match = text.replace(/\u00a0/g, " ").match(/^(#{1,2})\s+(.+)$/);
                 if (!match) return;
                 if (match[1].length > 2) return;
                 const level = match[1].length;
