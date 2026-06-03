@@ -297,14 +297,46 @@
             line-height: 2;
         }
 
-        #list-footer {
+        #pagination {
             display: none;
             justify-content: center;
+            align-items: center;
+            gap: 6px;
             padding: 0 32px 36px;
         }
 
-        #list-footer.visible {
+        #pagination.visible {
             display: flex;
+        }
+
+        .page-btn {
+            min-width: 32px;
+            height: 32px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text3);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+            transition: all .15s;
+        }
+
+        .page-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .page-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #0d0d0d;
+            font-weight: 700;
+        }
+
+        .page-btn:disabled {
+            cursor: default;
+            opacity: .35;
         }
 
         #view-detail {
@@ -785,9 +817,7 @@
 
     <div id="tag-filter-bar"></div>
     <div id="view-list"></div>
-    <div id="list-footer">
-        <button class="btn btn-cancel" id="btn-more">더 보기</button>
-    </div>
+    <div id="pagination"></div>
 
     <div id="view-detail">
         <button class="btn-back" id="btn-back">← 목록으로</button>
@@ -847,7 +877,7 @@
         let toastTimer = null;
         let editTags = [];
         let activeTag = "";
-        let visibleCount = PAGE_SIZE;
+        let currentPage = 1;
 
         function $(id) {
             return document.getElementById(id);
@@ -920,7 +950,7 @@
             $("tag-filter-bar").querySelectorAll(".tag-filter").forEach(btn => {
                 btn.addEventListener("click", () => {
                     activeTag = btn.dataset.tag;
-                    visibleCount = PAGE_SIZE;
+                    currentPage = 1;
                     renderList();
                 });
             });
@@ -931,7 +961,11 @@
 
         function renderList() {
             const filtered = getFilteredEntries();
-            const visible = filtered.slice(0, visibleCount);
+            const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+            if (currentPage > pageCount) currentPage = pageCount;
+
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const visible = filtered.slice(start, start + PAGE_SIZE);
             renderTagFilters();
 
             if (visible.length === 0) {
@@ -960,7 +994,36 @@
                 card.addEventListener("click", () => showDetail(card.dataset.id));
             });
 
-            $("list-footer").classList.toggle("visible", filtered.length > visibleCount);
+            renderPagination(pageCount, filtered.length);
+        }
+
+        function renderPagination(pageCount, totalCount) {
+            const el = $("pagination");
+            if (totalCount <= PAGE_SIZE) {
+                el.classList.remove("visible");
+                el.innerHTML = "";
+                return;
+            }
+
+            const pages = Array.from({ length: pageCount }, (_, index) => index + 1);
+            el.classList.add("visible");
+            el.innerHTML = `
+            <button class="page-btn" type="button" data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>‹</button>
+            ${pages.map(page => `
+            <button class="page-btn ${page === currentPage ? "active" : ""}" type="button" data-page="${page}">
+                ${page}
+            </button>
+            `).join("")}
+            <button class="page-btn" type="button" data-page="${currentPage + 1}" ${currentPage === pageCount ? "disabled" : ""}>›</button>
+        `;
+
+            el.querySelectorAll(".page-btn:not(:disabled)").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    currentPage = Number(btn.dataset.page);
+                    renderList();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+            });
         }
 
         function showList() {
@@ -979,7 +1042,7 @@
             $("list-tools").style.display = "none";
             $("tag-filter-bar").style.display = "none";
             $("view-list").style.display = "none";
-            $("list-footer").classList.remove("visible");
+            $("pagination").classList.remove("visible");
             $("view-detail").style.display = "block";
             if (id) renderRead();
             else renderEdit(null);
@@ -1021,7 +1084,7 @@
             $("detail-tags").querySelectorAll(".tag-link").forEach(btn => {
                 btn.addEventListener("click", () => {
                     activeTag = btn.dataset.tag;
-                    visibleCount = PAGE_SIZE;
+                    currentPage = 1;
                     showList();
                 });
             });
@@ -1180,19 +1243,14 @@
         $("btn-edit").addEventListener("click", () => renderEdit(currentId));
         $("btn-cancel").addEventListener("click", () => currentId ? renderRead() : showList());
 
-        $("btn-more").addEventListener("click", () => {
-            visibleCount += PAGE_SIZE;
-            renderList();
-        });
-
         $("search-input").addEventListener("input", () => {
-            visibleCount = PAGE_SIZE;
+            currentPage = 1;
             renderList();
         });
 
         $("clear-filter").addEventListener("click", () => {
             activeTag = "";
-            visibleCount = PAGE_SIZE;
+            currentPage = 1;
             renderList();
         });
 
