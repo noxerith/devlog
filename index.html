@@ -926,24 +926,23 @@
                     </div>
                 </article>
             </div>
+        </div>
+        <div id="section-edit">
+            <input id="editor-title" placeholder="제목" autocomplete="off">
 
-            <div id="section-edit">
-                <input id="editor-title" placeholder="제목" autocomplete="off">
+            <div class="editor-toolbar">
+                <button type="button" id="btn-code-block">{ } 코드 블록</button>
+            </div>
+            <div id="editor-body" contenteditable="true" spellcheck="false"></div>
 
-                <div class="editor-toolbar">
-                    <button type="button" id="btn-code-block">{ } 코드 블록</button>
-                </div>
-                <div id="editor-body" contenteditable="true" spellcheck="false"></div>
+            <div class="tag-input-row" id="tag-input-row">
+                <span id="tag-chips"></span>
+                <input id="tag-input" placeholder="태그 입력 후 Enter  예: react, bug-fix">
+            </div>
 
-                <div class="tag-input-row" id="tag-input-row">
-                    <span id="tag-chips"></span>
-                    <input id="tag-input" placeholder="태그 입력 후 Enter  예: react, bug-fix">
-                </div>
-
-                <div class="action-row">
-                    <button class="btn-cancel" id="btn-cancel">취소</button>
-                    <button class="btn-save" id="btn-save">저장</button>
-                </div>
+            <div class="action-row">
+                <button class="btn-cancel" id="btn-cancel">취소</button>
+                <button class="btn-save" id="btn-save">저장</button>
             </div>
         </div>
     </div>
