@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>devlog</title>
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+        <style>
+            *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+            :root {
+                --bg:      #111316;
+                --bg2:     #191b1f;
+                --bg3:     #21242a;
+                --border:  #252525;
+                --border2: #333;
+                --text:    #e8e6e0;
+                --text2:   #888880;
+                --text3:   #484844;
+                --accent:  #e8a825;
+                --accent2: #b07a10;
+                --danger:  #a05050;
+                --danger-bg: #1a0808;
+            }
+
+            body {
+                font-family: 'JetBrains Mono', monospace;
+                background: var(--bg);
+                color: var(--text);
+                min-height: 100vh;
+            }
+
+            ::-webkit-scrollbar { width: 6px; }
+            ::-webkit-scrollbar-track { background: var(--bg); }
+            ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+            /* HEADER */
+            header {
+                position: sticky; top: 0; z-index: 10;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                padding: 18px 32px;
+                display: flex; align-items: center; justify-content: space-between;
+            }
+            .logo { font-size: 15px; font-weight: 700; letter-spacing: .08em; color: var(--accent); }
+            .logo span { color: var(--text3); font-weight: 400; font-size: 12px; margin-left: 10px; }
+
+            .btn {
+                font-family: inherit;
+                font-size: 12px;
+                letter-spacing: .06em;
+                border-radius: 4px;
+                cursor: pointer;
+                padding: 8px 18px;
+                transition: all .15s;
+            }
+            #btn-new {
+                background: transparent;
+                border: 1px solid var(--accent);
+                color: var(--accent);
+            }
+            #btn-new:hover { background: var(--accent); color: #0d0d0d; }
+
+            /* LIST */
+            #view-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; padding: 32px; }
+
+            .card {
+                background: var(--bg2);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 22px 22px 18px;
+                cursor: pointer;
+                transition: border-color .15s, transform .1s;
+                position: relative;
+            }
+
+            .card:hover { border-color: var(--accent2); transform: translateY(-2px); }
+            .card:hover .card-dot { background: var(--accent); }
+            .card-dot {
+                position: absolute; top: 14px; right: 16px;
+                width: 6px; height: 6px; border-radius: 50%;
+                background: var(--border2);
+                transition: background .15s;
+            }
+            .card-date { font-size: 11px; color: var(--text3); letter-spacing: .06em; margin-bottom: 10px; }
+            .card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+            .card-preview {
+                font-size: 12px; color: var(--text2); line-height: 1.6;
+                display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+            }
+            .card-tag { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+            .tag {
+                display: inline-block;
+                background: var(--bg3); border: 1px solid var(--border); border-radius: 3px;
+                font-size: 10px; color: var(--text3); padding: 2px 8px; letter-spacing: .05em;
+            }
+
+            .empty {
+                grid-column: 1 / -1;
+                text-align: center; padding: 80px 0;
+                color: var(--text3); font-size: 13px; letter-spacing: .05em;
+                line-height: 2;
+            }
+            .empty-icon { font-size: 24px; margin-bottom: 8px; }
+
+            /* DETAIL */
+            #view-detail { display: none; max-width: 720px; margin: 0 auto; padding: 40px 32px 80px; }
+
+            .btn-back {
+                background: transparent; border: none;
+                color: var(--text3); font-family: inherit; font-size: 12px;
+                letter-spacing: .06em; cursor: pointer; padding: 0; margin-bottom: 28px;
+                display: flex; align-items: center; gap: 8px; transition: color .15s;
+            }
+            .btn-back:hover { color: var(--text2); }
+
+            .detail-date { font-size: 11px; color: var(--text3); letter-spacing: .08em; margin-bottom: 12px; }
+            .detail-title { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+            .detail-tags  { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+            .divider { border: none; border-top: 1px solid var(--border); margin: 0 0 24px; }
+            .detail-body { font-size: 14px; color: var(--text2); line-height: 1.9; word-break: break-word; }
+
+            /* EDITOR */
+            #editor-title {
+                width: 100%; background: transparent;
+                border: none; border-bottom: 1px solid var(--border);
+                color: var(--text); font-family: inherit; font-size: 22px; font-weight: 700;
+                padding: 8px 0; outline: none; margin-bottom: 20px; letter-spacing: .01em;
+            }
+            #editor-title::placeholder { color: var(--text3); }
+
+            #editor-body {
+                width: 100%; min-height: 300px;
+                background: var(--bg2); border: 1px solid var(--border); border-radius: 4px;
+                color: var(--text); font-family: inherit; font-size: 14px; line-height: 1.9;
+                padding: 16px; outline: none; word-break: break-word;
+            }
+            #editor-body::placeholder { color: var(--text3); }
+            #editor-body:focus { border-color: var(--border2); }
+            #editor-body:empty::before {
+                content: attr(data-placeholder);
+                color: var(--text3); pointer-events: none; display: block;
+                white-space: pre-wrap;
+            }
+
+            .editor-toolbar {
+                display: flex; gap: 8px; margin-bottom: 8px;
+            }
+            .editor-toolbar button {
+                background: transparent; border: 1px solid var(--border2);
+                color: var(--text3); font-family: inherit; font-size: 11px;
+                letter-spacing: .05em; padding: 4px 10px; border-radius: 3px;
+                cursor: pointer; transition: all .15s;
+            }
+            .editor-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+
+            #editor-body pre, .detail-body pre {
+                background: var(--bg);
+                border: 1px solid var(--border2);
+                border-left: 3px solid var(--accent);
+                border-radius: 4px;
+                padding: 12px 16px; margin: 10px 0;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 13px; line-height: 1.6;
+                color: var(--text); white-space: pre-wrap;
+                word-break: break-all; overflow-x: auto;
+            }
+
+            .detail-body img {
+                max-width: 100%; border-radius: 4px;
+                border: 1px solid var(--border); margin: 12px 0; display: block;
+            }
+
+            .action-row { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+            .btn-save {
+                background: var(--accent); border: none; color: #0d0d0d;
+                padding: 10px 24px; border-radius: 4px; cursor: pointer;
+                font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+                transition: background .15s;
+            }
+            .btn-save:hover { background: var(--accent2); }
+
+            .btn-cancel {
+                background: transparent; border: 1px solid var(--border); color: var(--text2);
+                padding: 10px 18px; border-radius: 4px; cursor: pointer;
+                font-family: inherit; font-size: 12px; letter-spacing: .06em;
+                transition: all .15s;
+            }
+            .btn-cancel:hover { border-color: var(--border2); color: var(--text); }
+
+            .btn-edit {
+                background: transparent; border: 1px solid var(--border); color: var(--text2);
+                padding: 8px 16px; border-radius: 4px; cursor: pointer;
+                font-family: inherit; font-size: 12px; letter-spacing: .06em;
+                transition: all .15s;
+            }
+            .btn-edit:hover { border-color: var(--border2); color: var(--text); }
+
+            .btn-delete {
+                background: transparent; border: 1px solid #2a1010; color: var(--danger);
+                padding: 8px 16px; border-radius: 4px; cursor: pointer;
+                font-family: inherit; font-size: 12px; letter-spacing: .06em;
+                transition: background .15s;
+            }
+            .btn-delete:hover { background: var(--danger-bg); }
+            
+            /* TAG INPUT */
+            .tag-input-row {
+                display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+                border: 1px solid var(--border); border-radius: 4px;
+                padding: 8px 10px; margin-bottom: 16px; min-height: 38px; cursor: text;
+            }
+            .tag-input-row:focus-within { border-color: var(--border2); }
+            .tag-chip {
+                display: inline-flex; align-items: center; gap: 5px;
+                background: var(--bg3); border: 1px solid var(--border2); border-radius: 3px;
+                font-size: 11px; color: var(--text2); padding: 2px 8px; letter-spacing: .04em;
+            }
+            .tag-chip button {
+                background: none; border: none; color: var(--text3); cursor: pointer;
+                font-size: 13px; line-height: 1; padding: 0; font-family: inherit; transition: color .1s;
+            }
+            .tag-chip button:hover { color: var(--danger); }
+            #tag-input {
+                background: transparent; border: none; outline: none;
+                color: var(--text); font-family: inherit; font-size: 11px;
+                min-width: 80px; flex: 1; letter-spacing: .04em;
+            }
+            #tag-input::placeholder { color: var(--text3); }
+
+            /* IMAGE UPLOAD */
+            .img-upload-area {
+                border: 1px dashed var(--border2); border-radius: 4px;
+                padding: 14px 16px; margin-bottom: 12px;
+                display: flex; align-items: center; gap: 12px; cursor: pointer;
+                transition: border-color .15s;
+            }
+            .img-upload-area:hover { border-color: var(--accent2); }
+            .img-upload-area span { font-size: 12px; color: var(--text3); letter-spacing: .05em; }
+            .img-upload-area small { font-size: 10px; color: var(--text3); margin-left: auto; }
+            #img-file-input { display: none; }
+
+            #lightbox {
+                display: none; position: fixed; inset: 0;
+                background: rgba(0,0,0,.92); align-items: center; justify-content: center;
+                z-index: 300; cursor: zoom-out;
+            }
+            #lightbox.open { display: flex; }
+            #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 4px; }
+
+            /* MODAL */
+            #modal {
+                display: none; position: fixed; inset: 0;
+                background: rgba(0,0,0,.75);
+                align-items: center; justify-content: center; z-index: 100;
+            }
+            #modal.open { display: flex; }
+            .modal-box {
+                background: var(--bg2); border: 1px solid var(--border);
+                border-radius: 8px; padding: 32px; width: 400px; max-width: 90vw;
+            }
+            .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+            .modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 24px; line-height: 1.7; }
+            .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+            .btn-confirm-del {
+                background: var(--danger-bg); border: 1px solid #3a1515; color: var(--danger);
+                padding: 10px 20px; border-radius: 4px; cursor: pointer;
+                font-family: inherit; font-size: 12px; letter-spacing: .06em;
+                transition: background .15s;
+            }
+            .btn-confirm-del:hover { background: #2a0a0a; }
+
+            /* TOAST */
+            #toast {
+                display: none; position: fixed; bottom: 28px; right: 28px;
+                background: var(--bg3); border: 1px solid var(--accent);
+                color: var(--accent); padding: 10px 18px; border-radius: 4px;
+                font-size: 12px; letter-spacing: .06em; z-index: 200;
+                animation: fadeUp .2s ease;
+            }
+            @keyframes fadeUp {
+                from { opacity: 0; transform: translateY(6px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+
+            /* read/edit sections inside detail */
+            #section-read  { display: none; }
+            #section-edit  { display: none; }
+
+            /* LOGIN SCREEN */
+            #login-screen {
+                position: fixed; inset: 0; background: var(--bg);
+                display: flex; align-items: center; justify-content: center;
+                z-index: 1000; flex-direction: column; gap: 20px;
+            }
+            .login-box {
+                text-align: center; width: 300px;
+            }
+            .login-box h1 { font-size: 18px; margin-bottom: 20px; color: var(--accent); }
+            #pw-input {
+                width: 100%; background: var(--bg2); border: 1px solid var(--border);
+                color: var(--text); padding: 12px; border-radius: 4px;
+                font-family: inherit; text-align: center; outline: none; margin-bottom: 12px;
+            }
+            #pw-input:focus { border-color: var(--accent); }
+            .btn-login {
+                width: 100%; background: var(--accent); border: none; color: #0d0d0d;
+                padding: 12px; border-radius: 4px; font-weight: 700; cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- LOGIN SCREEN -->
+        <div id="login-screen">
+            <div class="login-box">
+                <h1>ACCESS RESTRICTED</h1>
+                <input type="password" id="pw-input" placeholder="PASSWORD" autocomplete="off">
+                <button class="btn-login" id="btn-login">UNLOCK</button>
+            </div>
+        </div>
+
+        <header>
+            <div class="logo">devlog <span>// 개발 일지</span></div>
+            <button class="btn" id="btn-new">+ 새 일지</button>
+        </header>
+
+        <div id="view-list"></div>
+
+        <!-- DETAIL VIEW -->
+        <div id="view-detail">
+            <button class="btn-back" id="btn-back">← 목록으로</button>
+
+            <!-- READ -->
+            <div id="section-read">
+                <div class="detail-date" id="detail-date"></div>
+                <div class="detail-title" id="detail-title"></div>
+                <div class="detail-tags" id="detail-tags"></div>
+                <hr class="divider">
+                <div class="detail-body" id="detail-body"></div>
+                <div class="detail-images" id="detail-images"></div>
+                <div class="action-row">
+                <button class="btn-delete" id="btn-delete">삭제</button>
+                <button class="btn-edit"   id="btn-edit">수정</button>
+                </div>
+            </div>
+
+            <!-- EDIT -->
+            <div id="section-edit">
+                <input  id="editor-title" placeholder="제목" autocomplete="off">
+
+                <div class="editor-toolbar">
+                    <button type="button" id="btn-code-block">{ } 코드 블록</button>
+                </div>
+                <div id="editor-body" contenteditable="true" spellcheck="false"></div>
+
+                <div class="tag-input-row" id="tag-input-row">
+                    <span id="tag-chips"></span>
+                    <input id="tag-input" placeholder="태그 입력 후 Enter  (예: react, bug-fix)">
+                </div>
+
+                <div class="action-row">
+                    <button class="btn-cancel" id="btn-cancel">취소</button>
+                    <button class="btn-save"   id="btn-save">저장</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DELETE MODAL -->
+        <div id="modal">
+            <div class="modal-box">
+                <div class="modal-title">일지를 삭제할까요?</div>
+                <div class="modal-sub" id="modal-sub"></div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" id="modal-cancel">취소</button>
+                    <button class="btn-confirm-del" id="modal-confirm">삭제</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="lightbox"><img id="lightbox-img" src="" alt=""></div>
+        <div id="toast"></div>
+
+        <script>
+            const STORAGE_KEY = 'devlog_entries';
+            const BIN_ID = '6a045bd7c0954111d818d562';
+
+            let entries = [];
+            let currentId = null;
+            let toastTimer = null;
+            let editTags = [];
+
+            const API_BASE = "https://devlog-api.corskep.workers.dev";
+            
+            async function load() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/entries`);
+                    const data = await res.json();
+                    entries = (data.entries || []).filter(e => e.id);
+                    renderList();
+                } catch {
+                    toast('데이터를 불러오지 못했습니다.');
+                }
+            }
+
+            async function save() {
+                try {
+                    await fetch(`${API_BASE}/api/entries`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('devlog_token')}`
+                    },
+                    body: JSON.stringify({ entries })
+                    });
+                } catch {
+                    toast('저장 실패. 네트워크를 확인하세요.');
+                }
+            }
+
+            function fmtDate(ts) {
+                return new Date(ts).toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'})
+                .replace(/\. /g,'-').replace('.','');
+            }
+
+            function preview(body) {
+                const tmp = document.createElement('div');
+                tmp.innerHTML = body || '';
+                return tmp.textContent.replace(/\s+/g,' ').trim().slice(0,100) || '내용 없음';
+            }
+
+            function toast(msg) {
+                const el = document.getElementById('toast');
+                el.textContent = msg; el.style.display = 'block';
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => el.style.display = 'none', 2000);
+            }
+
+            /* ── VIEWS ── */
+            function showList() {
+                currentId = null;
+                document.getElementById('btn-new').style.display = '';
+                document.getElementById('view-list').style.display = 'grid';
+                document.getElementById('view-detail').style.display = 'none';
+                renderList();
+            }
+
+            function showDetail(id) {
+                currentId = id;
+                document.getElementById('btn-new').style.display = 'none';
+                document.getElementById('view-list').style.display = 'none';
+                document.getElementById('view-detail').style.display = 'block';
+                if (id) renderRead(); else renderEdit(null);
+            }
+
+            function renderList() {
+                const el = document.getElementById('view-list');
+                if (entries.length === 0) {
+                    el.innerHTML = `<div class="empty">
+                    <div class="empty-icon">[ ]</div>
+                    <div>아직 일지가 없습니다.</div>
+                    <div style="margin-top:6px;font-size:11px">오른쪽 위 버튼으로 첫 일지를 작성해보세요.</div>
+                    </div>`;
+                    return;
+                }
+                el.innerHTML = entries.map(e => {
+                    const tags = (e.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('');
+                    return `
+                        <div class="card" data-id="${e.id}">
+                            <div class="card-dot"></div>
+                            <div class="card-date">${fmtDate(e.createdAt)}</div>
+                            <div class="card-title">${esc(e.title)}</div>
+                            <div class="card-preview">${esc(preview(e.body))}</div>
+                            ${tags ? `<div class="card-tag">${tags}</div>` : ''}
+                        </div>`;
+                }).join('');
+
+                el.querySelectorAll('.card').forEach(card => {
+                    card.addEventListener('click', () => showDetail(card.dataset.id));
+                });
+            }
+
+            function renderRead() {
+                const e = entries.find(x => x.id === currentId);
+                if (!e) { showList(); return; }
+                document.getElementById('section-read').style.display = 'block';
+                document.getElementById('section-edit').style.display = 'none';
+                let dateStr = fmtDate(e.createdAt);
+                if (e.updatedAt !== e.createdAt) dateStr += `<span style="color:var(--text3);margin-left:10px">수정됨 ${fmtDate(e.updatedAt)}</span>`;
+                document.getElementById('detail-date').innerHTML = dateStr;
+                document.getElementById('detail-title').textContent = e.title;
+                document.getElementById('detail-body').innerHTML = e.body || '';
+                document.getElementById('detail-tags').innerHTML =
+                    (e.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('');
+
+                const imgsEl = document.getElementById('detail-images');
+                imgsEl.innerHTML = '';
+                (e.images||[]).forEach(img => {
+                const im = document.createElement('img');
+                    im.src = img.dataUrl; im.alt = img.name||'';
+                    im.addEventListener('click', () => openLightbox(img.dataUrl));
+                    imgsEl.appendChild(im);
+                });
+            }
+
+            function renderEdit(id) {
+                const e = id ? entries.find(x => x.id === id) : null;
+                document.getElementById('section-read').style.display = 'none';
+                document.getElementById('section-edit').style.display = 'block';
+                document.getElementById('editor-title').value = e ? e.title : '';
+                document.getElementById('editor-body').innerHTML = e ? e.body : '';
+                document.getElementById('editor-body').setAttribute('data-placeholder',
+                    '오늘의 개발 일지를 작성하세요...\n\n버그 픽스, 새로운 기능, 배운 것들, 막힌 부분 등\n자유롭게 기록해보세요.');
+                document.getElementById('editor-title').focus();
+                editTags = e ? [...(e.tags||[])] : [];
+                renderTagChips();
+            }
+
+            function esc(str) {
+                return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            }
+
+            function renderTagChips() {
+                document.getElementById('tag-chips').innerHTML =
+                    editTags.map((t,i)=>`<span class="tag-chip">#${esc(t)}<button data-i="${i}">×</button></span>`).join('');
+                document.getElementById('tag-chips').querySelectorAll('button').forEach(b =>
+                    b.addEventListener('click', e => { e.stopPropagation(); editTags.splice(+b.dataset.i,1); renderTagChips(); })
+                );
+            }
+
+            function addTag(raw) {
+                const tag = raw.trim().replace(/^#+/,'').replace(/\s+/g,'-').toLowerCase();
+                if (!tag || editTags.includes(tag)) return;
+                editTags.push(tag); renderTagChips();
+            }
+
+            document.getElementById('tag-input-row').addEventListener('click', () =>
+                document.getElementById('tag-input').focus()
+            );
+
+            document.getElementById('tag-input').addEventListener('keydown', e => {
+                const val = e.target.value;
+                if (e.key==='Enter'||e.key===',') { e.preventDefault(); addTag(val); e.target.value=''; }
+                else if (e.key==='Backspace'&&!val&&editTags.length) { editTags.pop(); renderTagChips(); }
+            });
+
+            document.getElementById('tag-input').addEventListener('blur', e => {
+                if (e.target.value.trim()) { addTag(e.target.value); e.target.value=''; }
+            });
+
+            function readFile(file) {
+                return new Promise((res,rej) => {
+                    const r = new FileReader();
+                    r.onload = () => res(r.result); r.onerror = rej;
+                    r.readAsDataURL(file);
+                });
+            }
+
+            async function addImages(files) {
+                const editor = document.getElementById('editor-body');
+                for (const f of files) {
+                    if (!f || !f.type.startsWith('image/')) continue;
+                    try {
+                        const dataUrl = await readFile(f);
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        img.style.cssText = 'max-width:100%;border-radius:4px;border:1px solid var(--border);margin:12px 0;display:block;';
+
+                        const sel = window.getSelection();
+                        if (sel.rangeCount && editor.contains(sel.anchorNode)) {
+                            const range = sel.getRangeAt(0);
+                            range.deleteContents();
+                            range.insertNode(img);
+                            range.setStartAfter(img);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        } else {
+                            editor.appendChild(img);
+                        }
+                    } catch { toast('이미지 읽기 실패: ' + (f.name||'')); }
+                }
+            }
+
+            document.addEventListener('paste', e => {
+                if (document.getElementById('section-edit').style.display==='none') return;
+                const imgs = [...(e.clipboardData?.items||[])].filter(it=>it.type.startsWith('image/'));
+                if (!imgs.length) return;
+                e.preventDefault();
+                addImages(imgs.map(it=>it.getAsFile()));
+                toast('이미지를 붙여넣었습니다.');
+            });
+
+            function openLightbox(src) {
+                document.getElementById('lightbox-img').src = src;
+                document.getElementById('lightbox').classList.add('open');
+            }
+
+            document.getElementById('lightbox').addEventListener('click', () =>
+                document.getElementById('lightbox').classList.remove('open')
+            );
+
+            document.getElementById('editor-body').addEventListener('input', function() {
+                if (this.innerHTML === '<br>' || this.innerHTML === '') {
+                    this.innerHTML = '';
+                }
+            });
+
+            document.getElementById('btn-code-block').addEventListener('click', () => {
+                const editor = document.getElementById('editor-body');
+                editor.focus();
+
+                const pre = document.createElement('pre');
+                pre.textContent = '';
+                
+                const brLine = document.createElement('div');
+                brLine.innerHTML = '<br>';
+
+                const sel = window.getSelection();
+                if (sel.rangeCount && editor.contains(sel.anchorNode)) {
+                    const range = sel.getRangeAt(0);
+                    range.deleteContents();
+                    
+                    range.insertNode(brLine);
+                    range.insertNode(pre);
+
+                    const newRange = document.createRange();
+                    newRange.setStart(pre, 0);
+                    newRange.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(newRange);
+                } else {
+                    editor.appendChild(pre);
+                    editor.appendChild(brLine);
+                    pre.focus();
+                }
+            });
+
+            document.getElementById('editor-body').addEventListener('keydown', function(e) {
+                const sel = window.getSelection();
+                if (!sel.rangeCount) return;
+
+                let node = sel.anchorNode;
+                let pre = null;
+                while (node && node !== this) {
+                    if (node.nodeName === 'PRE') { pre = node; break; }
+                    node = node.parentNode;
+                }
+                if (!pre) return;
+
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    const p = document.createElement('div');
+                    p.innerHTML = '<br>';
+                    pre.parentNode.insertBefore(p, pre.nextSibling);
+                    const newRange = document.createRange();
+                    newRange.setStart(p, 0);
+                    newRange.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(newRange);
+                }
+            });
+
+            /* ── ACTIONS ── */
+            document.getElementById('btn-new').addEventListener('click', () => {
+                showDetail(null);
+            });
+
+            document.getElementById('btn-back').addEventListener('click', showList);
+
+            document.getElementById('btn-edit').addEventListener('click', () => renderEdit(currentId));
+
+            document.getElementById('btn-cancel').addEventListener('click', () => {
+                if (currentId) renderRead(); else showList();
+            });
+
+            document.getElementById('btn-save').addEventListener('click', async () => {
+                const title = document.getElementById('editor-title').value.trim();
+                const body = document.getElementById('editor-body').innerHTML;
+                if (!title) { toast('제목을 입력해주세요.'); return; }
+                const now = Date.now();
+                const ti = document.getElementById('tag-input');
+                if (ti.value.trim()) { addTag(ti.value); ti.value=''; }
+                if (currentId) {
+                    entries = entries.map(e => e.id === currentId
+                    ? { ...e, title, body, tags:[...editTags], updatedAt: now }
+                    : e);
+                } else {
+                    const id = now.toString();
+                    entries.unshift({ id, title, body, tags:[...editTags], createdAt: now, updatedAt: now });
+                    currentId = id;
+                }
+                await save();
+                renderRead();
+                toast('저장됐습니다.');
+            });
+
+            document.getElementById('btn-delete').addEventListener('click', () => {
+                const e = entries.find(x => x.id === currentId);
+                document.getElementById('modal-sub').innerHTML =
+                `"${esc(e.title)}"<br>삭제된 일지는 복구할 수 없습니다.`;
+                document.getElementById('modal').classList.add('open');
+            });
+
+            document.getElementById('modal-cancel').addEventListener('click', () => {
+                document.getElementById('modal').classList.remove('open');
+            });
+
+            document.getElementById('modal-confirm').addEventListener('click', async () => {
+                entries = entries.filter(e => e.id !== currentId);
+                await save();
+                document.getElementById('modal').classList.remove('open');
+                showList();
+                toast('삭제됐습니다.');
+            });
+
+            document.getElementById('modal').addEventListener('click', e => {
+                if (e.target === document.getElementById('modal'))
+                document.getElementById('modal').classList.remove('open');
+            });
+
+            document.getElementById('btn-login').addEventListener('click', async () => {
+                const password = document.getElementById('pw-input').value;
+
+                const res = await fetch(`${API_BASE}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    sessionStorage.setItem('devlog_auth', 'true');
+                    sessionStorage.setItem('devlog_token', data.token);
+                    document.getElementById('login-screen').style.display = 'none';
+                    await load();
+                    showList();
+                    toast('반갑습니다.');
+                } else {
+                    toast('비밀번호가 틀렸습니다.');
+                }
+            });
+
+            document.getElementById('pw-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('btn-login').click();
+            });
+
+            /* ── INIT ── */
+            (() => {
+                const isAuth = sessionStorage.getItem('devlog_auth');
+                const screen = document.getElementById('login-screen');
+                
+                if (isAuth === 'true') {
+                    screen.style.display = 'none';
+                    load();
+                    showList();
+                } else {
+                    screen.style.display = 'flex';
+                }
+            })();
+        </script>
+    </body>
+</html>
