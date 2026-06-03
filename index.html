@@ -1,877 +1,1270 @@
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>devlog</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-        <style>
-            *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-            :root {
-                --bg: #111316;
-                --bg2: #191b1f;
-                --bg3: #21242a;
-                --line: #2c3037;
-                --line2: #3a4048;
-                --text: #ece8df;
-                --muted: #9b9a91;
-                --dim: #5f625f;
-                --accent: #e8a825;
-                --accent2: #b07a10;
-                --danger: #cf6868;
-                --danger-bg: #1f0c0c;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>devlog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-            body {
-                font-family: "JetBrains Mono", monospace;
-                background: var(--bg);
-                color: var(--text);
-                min-height: 100vh;
-            }
+        :root {
+            --bg: #111316;
+            --bg2: #191b1f;
+            --bg3: #21242a;
+            --border: #252525;
+            --border2: #333;
+            --text: #e8e6e0;
+            --text2: #888880;
+            --text3: #484844;
+            --accent: #e8a825;
+            --accent2: #b07a10;
+            --danger: #a05050;
+            --danger-bg: #1a0808;
+        }
 
-            button, input, textarea { font: inherit; }
-            button { cursor: pointer; }
-            ::selection { background: rgba(232, 168, 37, .28); }
-            ::-webkit-scrollbar { width: 8px; height: 8px; }
-            ::-webkit-scrollbar-track { background: var(--bg); }
-            ::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 99px; }
+        body {
+            font-family: "JetBrains Mono", monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 3px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            color: var(--accent);
+        }
+
+        .logo span {
+            color: var(--text3);
+            font-weight: 400;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: .06em;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 8px 18px;
+            transition: all .15s;
+        }
+
+        #btn-new {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        #btn-new:hover {
+            background: var(--accent);
+            color: #0d0d0d;
+        }
+
+        #list-tools {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) auto;
+            gap: 10px;
+            padding: 24px 32px 0;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 0 12px;
+            min-width: 0;
+        }
+
+        .search-box span {
+            color: var(--text3);
+            font-size: 13px;
+        }
+
+        #search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            padding: 11px 0;
+            font-size: 12px;
+        }
+
+        #active-filter {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 0 10px;
+            color: var(--text2);
+            min-height: 39px;
+            font-size: 11px;
+        }
+
+        #active-filter.visible {
+            display: flex;
+        }
+
+        #active-filter strong {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        #clear-filter {
+            background: transparent;
+            border: none;
+            color: var(--text3);
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1;
+        }
+
+        #tag-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 12px 32px 0;
+        }
+
+        .tag-filter {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text3);
+            cursor: pointer;
+            font-size: 10px;
+            letter-spacing: .05em;
+            padding: 4px 8px;
+        }
+
+        .tag-filter:hover,
+        .tag-filter.active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        #view-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            padding: 24px 32px 18px;
+        }
+
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 22px 22px 18px;
+            cursor: pointer;
+            transition: border-color .15s, transform .1s;
+            position: relative;
+            min-height: 180px;
+        }
+
+        .card:hover {
+            border-color: var(--accent2);
+            transform: translateY(-2px);
+        }
+
+        .card:hover .card-dot {
+            background: var(--accent);
+        }
+
+        .card-dot {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--border2);
+            transition: background .15s;
+        }
+
+        .card-date {
+            font-size: 11px;
+            color: var(--text3);
+            letter-spacing: .06em;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            padding-right: 12px;
+        }
+
+        .card-preview {
+            font-size: 12px;
+            color: var(--text2);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-tag {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 10px;
+            color: var(--text3);
+            padding: 2px 8px;
+            letter-spacing: .05em;
+        }
+
+        button.tag {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        button.tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 0;
+            color: var(--text3);
+            font-size: 13px;
+            letter-spacing: .05em;
+            line-height: 2;
+        }
+
+        #list-footer {
+            display: none;
+            justify-content: center;
+            padding: 0 32px 36px;
+        }
+
+        #list-footer.visible {
+            display: flex;
+        }
+
+        #view-detail {
+            display: none;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 32px 80px;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: none;
+            color: var(--text3);
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: .06em;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color .15s;
+        }
+
+        .btn-back:hover {
+            color: var(--text2);
+        }
+
+        .detail-date {
+            font-size: 11px;
+            color: var(--text3);
+            letter-spacing: .08em;
+            margin-bottom: 12px;
+        }
+
+        .detail-title {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .detail-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0 0 24px;
+        }
+
+        .detail-body {
+            font-size: 14px;
+            color: var(--text2);
+            line-height: 1.9;
+            word-break: break-word;
+        }
+
+        #editor-title {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 22px;
+            font-weight: 700;
+            padding: 8px 0;
+            outline: none;
+            margin-bottom: 20px;
+            letter-spacing: .01em;
+        }
+
+        #editor-title::placeholder {
+            color: var(--text3);
+        }
+
+        #editor-body {
+            width: 100%;
+            min-height: 300px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.9;
+            padding: 16px;
+            outline: none;
+            word-break: break-word;
+        }
+
+        #editor-body:focus {
+            border-color: var(--border2);
+        }
+
+        #editor-body:empty::before {
+            content: attr(data-placeholder);
+            color: var(--text3);
+            pointer-events: none;
+            display: block;
+            white-space: pre-wrap;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .editor-toolbar button {
+            background: transparent;
+            border: 1px solid var(--border2);
+            color: var(--text3);
+            font-family: inherit;
+            font-size: 11px;
+            letter-spacing: .05em;
+            padding: 4px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .editor-toolbar button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        #editor-body pre,
+        .detail-body pre {
+            background: #0d1117;
+            border: 1px solid var(--border2);
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow-x: auto;
+        }
+
+        .detail-body code {
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .detail-body img,
+        #editor-body img {
+            max-width: 100%;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            margin: 12px 0;
+            display: block;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn-save {
+            background: var(--accent);
+            border: none;
+            color: #0d0d0d;
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            transition: background .15s;
+        }
+
+        .btn-save:hover {
+            background: var(--accent2);
+        }
+
+        .btn-cancel,
+        .btn-edit {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 10px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: .06em;
+            transition: all .15s;
+        }
+
+        .btn-edit {
+            padding: 8px 16px;
+        }
+
+        .btn-cancel:hover,
+        .btn-edit:hover {
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: 1px solid #2a1010;
+            color: var(--danger);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: .06em;
+            transition: background .15s;
+        }
+
+        .btn-delete:hover {
+            background: var(--danger-bg);
+        }
+
+        .tag-input-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px 10px;
+            margin-bottom: 16px;
+            min-height: 38px;
+            cursor: text;
+        }
+
+        .tag-input-row:focus-within {
+            border-color: var(--border2);
+        }
+
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg3);
+            border: 1px solid var(--border2);
+            border-radius: 3px;
+            font-size: 11px;
+            color: var(--text2);
+            padding: 2px 8px;
+            letter-spacing: .04em;
+        }
+
+        .tag-chip button {
+            background: none;
+            border: none;
+            color: var(--text3);
+            cursor: pointer;
+            font-size: 13px;
+            line-height: 1;
+            padding: 0;
+            font-family: inherit;
+            transition: color .1s;
+        }
+
+        .tag-chip button:hover {
+            color: var(--danger);
+        }
+
+        #tag-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 11px;
+            min-width: 80px;
+            flex: 1;
+            letter-spacing: .04em;
+        }
+
+        #tag-input::placeholder {
+            color: var(--text3);
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .75);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 18px;
+        }
+
+        #modal.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            width: 400px;
+            max-width: 90vw;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-sub {
+            font-size: 12px;
+            color: var(--text2);
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-confirm-del {
+            background: var(--danger-bg);
+            border: 1px solid #3a1515;
+            color: var(--danger);
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: .06em;
+            transition: background .15s;
+        }
+
+        .btn-confirm-del:hover {
+            background: #2a0a0a;
+        }
+
+        #toast {
+            display: none;
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--bg3);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 18px;
+            border-radius: 4px;
+            font-size: 12px;
+            letter-spacing: .06em;
+            z-index: 200;
+        }
+
+        #section-read,
+        #section-edit {
+            display: none;
+        }
+
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .login-box {
+            text-align: center;
+            width: 300px;
+            max-width: 100%;
+        }
+
+        .login-box h1 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        #pw-input {
+            width: 100%;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px;
+            border-radius: 4px;
+            font-family: inherit;
+            text-align: center;
+            outline: none;
+            margin-bottom: 12px;
+        }
+
+        #pw-input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: var(--accent);
+            border: none;
+            color: #0d0d0d;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        @media (max-width: 700px) {
             header {
-                position: sticky;
-                top: 0;
-                z-index: 20;
-                background: rgba(17, 19, 22, .96);
-                border-bottom: 1px solid var(--line);
-                padding: 16px 28px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 16px;
-                backdrop-filter: blur(10px);
+                padding: 16px;
             }
 
-            .logo { font-size: 15px; font-weight: 700; letter-spacing: .08em; color: var(--accent); white-space: nowrap; }
-            .logo span { color: var(--dim); font-weight: 400; font-size: 12px; margin-left: 8px; }
-
-            .btn {
-                border-radius: 4px;
-                font-size: 12px;
-                letter-spacing: .05em;
-                padding: 8px 14px;
-                transition: border-color .15s, color .15s, background .15s;
-                white-space: nowrap;
-            }
-
-            .btn-primary { background: var(--accent); border: 1px solid var(--accent); color: #101010; font-weight: 700; }
-            .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
-            .btn-ghost { background: transparent; border: 1px solid var(--line2); color: var(--muted); }
-            .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-            .btn-danger { background: transparent; border: 1px solid #452020; color: var(--danger); }
-            .btn-danger:hover { background: var(--danger-bg); }
-            .icon-btn { min-width: 34px; padding: 8px 10px; }
-
-            .top-tools {
-                display: grid;
-                grid-template-columns: minmax(180px, 1fr) auto;
-                gap: 12px;
-                padding: 24px 28px 0;
-            }
-
-            .search-wrap {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                min-width: 0;
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 6px;
-                padding: 0 12px;
-            }
-
-            .search-wrap span { color: var(--dim); font-size: 13px; }
-            #search-input {
-                width: 100%;
-                min-width: 0;
-                background: transparent;
-                border: 0;
-                outline: 0;
-                color: var(--text);
-                padding: 12px 0;
-                font-size: 13px;
-            }
-
-            #active-filter {
+            .logo span {
                 display: none;
-                align-items: center;
-                gap: 8px;
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 6px;
-                color: var(--muted);
-                padding: 0 10px;
-                font-size: 12px;
-                min-height: 42px;
             }
 
-            #active-filter.visible { display: inline-flex; }
-            #active-filter strong { color: var(--accent); font-weight: 500; }
-            #clear-filter {
-                border: 0;
-                background: transparent;
-                color: var(--dim);
-                font-size: 16px;
-                line-height: 1;
-                padding: 2px;
+            #list-tools {
+                grid-template-columns: 1fr;
+                padding: 18px 16px 0;
             }
 
-            #tag-filter-bar {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 6px;
-                padding: 14px 28px 0;
-            }
-
-            .tag-filter {
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 4px;
-                color: var(--muted);
-                padding: 5px 9px;
-                font-size: 11px;
-                letter-spacing: .03em;
-            }
-
-            .tag-filter.active,
-            .tag-filter:hover {
-                border-color: var(--accent);
-                color: var(--accent);
-            }
-
+            #tag-filter-bar,
             #view-list {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-                gap: 16px;
-                padding: 24px 28px 18px;
+                padding-left: 16px;
+                padding-right: 16px;
             }
-
-            .card {
-                min-height: 180px;
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 6px;
-                padding: 20px;
-                position: relative;
-                transition: border-color .15s, transform .12s;
-            }
-
-            .card:hover { border-color: var(--accent2); transform: translateY(-2px); }
-            .card-dot {
-                position: absolute;
-                top: 14px;
-                right: 15px;
-                width: 6px;
-                height: 6px;
-                border-radius: 99px;
-                background: var(--line2);
-            }
-
-            .card:hover .card-dot { background: var(--accent); }
-            .card-date { font-size: 11px; color: var(--dim); letter-spacing: .06em; margin-bottom: 10px; }
-            .card-title { font-size: 15px; font-weight: 700; line-height: 1.45; margin-bottom: 8px; padding-right: 12px; }
-            .card-preview {
-                font-size: 12px;
-                color: var(--muted);
-                line-height: 1.65;
-                display: -webkit-box;
-                -webkit-line-clamp: 3;
-                line-clamp: 3;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-
-            .tag-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 13px; }
-            .tag {
-                display: inline-block;
-                background: var(--bg3);
-                border: 1px solid var(--line);
-                border-radius: 3px;
-                color: var(--muted);
-                font-size: 10px;
-                padding: 2px 7px;
-                letter-spacing: .04em;
-            }
-
-            .empty {
-                grid-column: 1 / -1;
-                color: var(--dim);
-                text-align: center;
-                padding: 80px 0;
-                font-size: 13px;
-                line-height: 2;
-            }
-
-            .list-footer {
-                display: none;
-                justify-content: center;
-                padding: 0 28px 36px;
-            }
-
-            .list-footer.visible { display: flex; }
 
             #view-detail {
-                display: none;
-                max-width: 1180px;
-                margin: 0 auto;
-                padding: 36px 28px 80px;
+                padding: 30px 16px 70px;
             }
+        }
+    </style>
+</head>
 
-            .detail-grid {
-                display: grid;
-                grid-template-columns: minmax(0, 760px) minmax(190px, 240px);
-                gap: 36px;
-                align-items: start;
-            }
+<body>
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>ACCESS RESTRICTED</h1>
+            <input type="password" id="pw-input" placeholder="PASSWORD" autocomplete="off">
+            <button class="btn-login" id="btn-login">UNLOCK</button>
+        </div>
+    </div>
 
-            .detail-date { color: var(--dim); font-size: 11px; letter-spacing: .08em; margin: 18px 0 10px; }
-            .detail-title { font-size: 27px; line-height: 1.3; margin-bottom: 14px; overflow-wrap: anywhere; }
-            .divider { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
-            .detail-body { color: var(--muted); font-size: 14px; line-height: 1.9; overflow-wrap: anywhere; }
-            .detail-body h1, .detail-body h2, .detail-body h3 { color: var(--text); line-height: 1.35; margin: 26px 0 12px; }
-            .detail-body h1 { font-size: 24px; }
-            .detail-body h2 { font-size: 20px; }
-            .detail-body h3 { font-size: 17px; }
-            .detail-body p, .detail-body ul, .detail-body ol, .detail-body blockquote { margin: 12px 0; }
-            .detail-body ul, .detail-body ol { padding-left: 22px; }
-            .detail-body a { color: var(--accent); }
-            .detail-body blockquote { border-left: 3px solid var(--accent2); padding-left: 14px; color: var(--muted); }
-            .detail-body pre {
-                background: #0d1117;
-                border: 1px solid var(--line2);
-                border-left: 3px solid var(--accent);
-                border-radius: 5px;
-                margin: 14px 0;
-                overflow: auto;
-            }
-            .detail-body code { font-family: "JetBrains Mono", monospace; }
-            .detail-body :not(pre) > code {
-                background: var(--bg3);
-                border: 1px solid var(--line);
-                border-radius: 3px;
-                color: var(--text);
-                padding: 1px 5px;
-                font-size: .92em;
-            }
-            .detail-body img { max-width: 100%; border-radius: 5px; border: 1px solid var(--line); margin: 12px 0; display: block; }
+    <header>
+        <div class="logo">devlog <span>// 개발 일지</span></div>
+        <button class="btn" id="btn-new">+ 새 일지</button>
+    </header>
 
-            .toc {
-                position: sticky;
-                top: 86px;
-                border-left: 1px solid var(--line);
-                padding-left: 15px;
-                color: var(--dim);
-                font-size: 12px;
-                max-height: calc(100vh - 120px);
-                overflow: auto;
-            }
+    <div id="list-tools">
+        <label class="search-box">
+            <span>⌕</span>
+            <input id="search-input" type="search" placeholder="제목, 본문, 태그 검색" autocomplete="off">
+        </label>
+        <div id="active-filter">
+            <span>태그</span>
+            <strong id="active-filter-name"></strong>
+            <button id="clear-filter" title="필터 해제" type="button">×</button>
+        </div>
+    </div>
 
-            .toc-title { color: var(--muted); font-size: 11px; letter-spacing: .08em; margin-bottom: 10px; }
-            .toc a {
-                display: block;
-                color: var(--dim);
-                text-decoration: none;
-                line-height: 1.5;
-                padding: 4px 0;
-                overflow-wrap: anywhere;
-            }
-            .toc a:hover { color: var(--accent); }
-            .toc .h2 { padding-left: 10px; }
-            .toc .h3 { padding-left: 20px; }
-            .toc.empty { display: none; }
+    <div id="tag-filter-bar"></div>
+    <div id="view-list"></div>
+    <div id="list-footer">
+        <button class="btn btn-cancel" id="btn-more">더 보기</button>
+    </div>
 
-            #section-read, #section-edit { display: none; }
-            .action-row { display: flex; gap: 9px; justify-content: flex-end; margin-top: 24px; flex-wrap: wrap; }
+    <div id="view-detail">
+        <button class="btn-back" id="btn-back">← 목록으로</button>
 
-            #editor-title {
-                width: 100%;
-                background: transparent;
-                border: 0;
-                border-bottom: 1px solid var(--line);
-                color: var(--text);
-                outline: 0;
-                font-size: 22px;
-                font-weight: 700;
-                padding: 8px 0 12px;
-                margin-bottom: 16px;
-            }
-
-            .editor-tabs {
-                display: flex;
-                gap: 6px;
-                margin-bottom: 10px;
-            }
-
-            .tab-btn {
-                background: transparent;
-                border: 1px solid var(--line2);
-                color: var(--muted);
-                border-radius: 4px;
-                padding: 6px 10px;
-                font-size: 11px;
-                letter-spacing: .05em;
-            }
-
-            .tab-btn.active { border-color: var(--accent); color: var(--accent); }
-
-            .editor-pane {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr);
-                gap: 12px;
-            }
-
-            .editor-pane.split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-
-            #editor-body {
-                width: 100%;
-                min-height: 420px;
-                resize: vertical;
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 5px;
-                color: var(--text);
-                outline: 0;
-                padding: 16px;
-                font-size: 14px;
-                line-height: 1.8;
-            }
-
-            #editor-preview {
-                display: none;
-                min-height: 420px;
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 5px;
-                padding: 16px;
-                overflow: auto;
-            }
-
-            .editor-pane.preview #editor-body { display: none; }
-            .editor-pane.preview #editor-preview,
-            .editor-pane.split #editor-preview { display: block; }
-
-            .tag-input-row {
-                display: flex;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 6px;
-                border: 1px solid var(--line);
-                border-radius: 5px;
-                padding: 8px 10px;
-                margin-top: 14px;
-                min-height: 42px;
-                cursor: text;
-            }
-
-            .tag-chip {
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-                background: var(--bg3);
-                border: 1px solid var(--line2);
-                border-radius: 3px;
-                font-size: 11px;
-                color: var(--muted);
-                padding: 2px 8px;
-            }
-
-            .tag-chip button { background: transparent; border: 0; color: var(--dim); font-size: 13px; line-height: 1; }
-            .tag-chip button:hover { color: var(--danger); }
-            #tag-input {
-                min-width: 120px;
-                flex: 1;
-                background: transparent;
-                border: 0;
-                outline: 0;
-                color: var(--text);
-                font-size: 12px;
-                padding: 4px 0;
-            }
-
-            #login-screen {
-                position: fixed;
-                inset: 0;
-                z-index: 1000;
-                background: var(--bg);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-            }
-
-            .login-box { width: min(320px, 100%); text-align: center; }
-            .login-box h1 { color: var(--accent); font-size: 18px; margin-bottom: 18px; letter-spacing: .08em; }
-            #pw-input {
-                width: 100%;
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 5px;
-                color: var(--text);
-                padding: 12px;
-                text-align: center;
-                outline: 0;
-                margin-bottom: 10px;
-            }
-            #pw-input:focus { border-color: var(--accent); }
-
-            #modal {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, .74);
-                z-index: 100;
-                align-items: center;
-                justify-content: center;
-                padding: 18px;
-            }
-            #modal.open { display: flex; }
-            .modal-box {
-                width: min(420px, 100%);
-                background: var(--bg2);
-                border: 1px solid var(--line);
-                border-radius: 8px;
-                padding: 28px;
-            }
-            .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-            .modal-sub { color: var(--muted); font-size: 12px; line-height: 1.7; margin-bottom: 22px; }
-            .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-            #toast {
-                display: none;
-                position: fixed;
-                right: 24px;
-                bottom: 24px;
-                z-index: 2000;
-                background: var(--bg3);
-                border: 1px solid var(--accent);
-                border-radius: 5px;
-                color: var(--accent);
-                padding: 10px 15px;
-                font-size: 12px;
-                max-width: min(360px, calc(100vw - 36px));
-            }
-
-            @media (max-width: 820px) {
-                header { padding: 14px 16px; }
-                .logo span { display: none; }
-                .top-tools { grid-template-columns: 1fr; padding: 18px 16px 0; }
-                #tag-filter-bar, #view-list { padding-left: 16px; padding-right: 16px; }
-                #view-detail { padding: 26px 16px 70px; }
-                .detail-grid { grid-template-columns: 1fr; }
-                .toc { display: none; }
-                .editor-pane.split { grid-template-columns: 1fr; }
-                #editor-body, #editor-preview { min-height: 340px; }
-            }
-        </style>
-    </head>
-    <body>
-        <div id="login-screen">
-            <div class="login-box">
-                <h1>ACCESS RESTRICTED</h1>
-                <input type="password" id="pw-input" placeholder="PASSWORD" autocomplete="off">
-                <button class="btn btn-primary" id="btn-login">UNLOCK</button>
+        <div id="section-read">
+            <div class="detail-date" id="detail-date"></div>
+            <div class="detail-title" id="detail-title"></div>
+            <div class="detail-tags" id="detail-tags"></div>
+            <hr class="divider">
+            <div class="detail-body" id="detail-body"></div>
+            <div class="action-row">
+                <button class="btn-delete" id="btn-delete">삭제</button>
+                <button class="btn-edit" id="btn-edit">수정</button>
             </div>
         </div>
 
-        <header>
-            <div class="logo">devlog <span>// private journal</span></div>
-            <button class="btn btn-primary" id="btn-new">+ 새 일지</button>
-        </header>
+        <div id="section-edit">
+            <input id="editor-title" placeholder="제목" autocomplete="off">
 
-        <main>
-            <section id="list-tools">
-                <div class="top-tools">
-                <label class="search-wrap">
-                    <span>⌕</span>
-                    <input id="search-input" type="search" placeholder="제목, 본문, 태그 검색" autocomplete="off">
-                </label>
-                <div id="active-filter">
-                    <span>태그</span>
-                    <strong id="active-filter-name"></strong>
-                    <button id="clear-filter" title="필터 해제" type="button">×</button>
-                </div>
-                </div>
-                <div id="tag-filter-bar"></div>
-            </section>
+            <div class="editor-toolbar">
+                <button type="button" id="btn-code-block">{ } 코드 블록</button>
+            </div>
+            <div id="editor-body" contenteditable="true" spellcheck="false"></div>
 
-            <section id="view-list"></section>
-            <div class="list-footer" id="list-footer">
-                <button class="btn btn-ghost" id="btn-more">더 보기</button>
+            <div class="tag-input-row" id="tag-input-row">
+                <span id="tag-chips"></span>
+                <input id="tag-input" placeholder="태그 입력 후 Enter  예: react, bug-fix">
             </div>
 
-            <section id="view-detail">
-                <button class="btn btn-ghost" id="btn-back">← 목록으로</button>
+            <div class="action-row">
+                <button class="btn-cancel" id="btn-cancel">취소</button>
+                <button class="btn-save" id="btn-save">저장</button>
+            </div>
+        </div>
+    </div>
 
-                <div id="section-read">
-                <div class="detail-grid">
-                    <article>
-                    <div class="detail-date" id="detail-date"></div>
-                    <h1 class="detail-title" id="detail-title"></h1>
-                    <div class="tag-row" id="detail-tags"></div>
-                    <hr class="divider">
-                    <div class="detail-body" id="detail-body"></div>
-                    <div class="action-row">
-                        <button class="btn btn-danger" id="btn-delete">삭제</button>
-                        <button class="btn btn-ghost" id="btn-edit">수정</button>
-                    </div>
-                    </article>
-                    <aside class="toc" id="toc"></aside>
-                </div>
-                </div>
-
-                <div id="section-edit">
-                <input id="editor-title" placeholder="제목" autocomplete="off">
-
-                <div class="editor-tabs">
-                    <button class="tab-btn active" type="button" data-mode="write">작성</button>
-                    <button class="tab-btn" type="button" data-mode="preview">미리보기</button>
-                    <button class="tab-btn" type="button" data-mode="split">분할</button>
-                </div>
-
-                <div class="editor-pane" id="editor-pane">
-                    <textarea id="editor-body" spellcheck="false" placeholder="# 오늘의 개발 일지&#10;&#10;```js&#10;console.log('hello devlog');&#10;```"></textarea>
-                    <div class="detail-body" id="editor-preview"></div>
-                </div>
-
-                <div class="tag-input-row" id="tag-input-row">
-                    <span id="tag-chips"></span>
-                    <input id="tag-input" placeholder="태그 입력 후 Enter  예: react, bug-fix">
-                </div>
-
-                <div class="action-row">
-                    <button class="btn btn-ghost" id="btn-cancel">취소</button>
-                    <button class="btn btn-primary" id="btn-save">저장</button>
-                </div>
-                </div>
-            </section>
-        </main>
-
-        <div id="modal">
+    <div id="modal">
         <div class="modal-box">
             <div class="modal-title">일지를 삭제할까요?</div>
             <div class="modal-sub" id="modal-sub"></div>
             <div class="modal-actions">
-            <button class="btn btn-ghost" id="modal-cancel">취소</button>
-            <button class="btn btn-danger" id="modal-confirm">삭제</button>
+                <button class="btn-cancel" id="modal-cancel">취소</button>
+                <button class="btn-confirm-del" id="modal-confirm">삭제</button>
             </div>
         </div>
-        </div>
+    </div>
 
-        <div id="toast"></div>
+    <div id="toast"></div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.11/purify.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-        <script>
-            const API_BASE = "https://devlog-api.corskep.workers.dev";
-            const PAGE_SIZE = 20;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        const API_BASE = "https://devlog-api.corskep.workers.dev";
+        const PAGE_SIZE = 20;
 
-            let entries = [];
-            let currentId = null;
-            let editTags = [];
-            let toastTimer = null;
-            let activeTag = "";
-            let visibleCount = PAGE_SIZE;
+        let entries = [];
+        let currentId = null;
+        let toastTimer = null;
+        let editTags = [];
+        let activeTag = "";
+        let visibleCount = PAGE_SIZE;
 
-            marked.setOptions({
-                breaks: true,
-                highlight(code, lang) {
-                const language = hljs.getLanguage(lang) ? lang : "plaintext";
-                return hljs.highlight(code, { language }).value;
-                }
-            });
+        function $(id) {
+            return document.getElementById(id);
+        }
 
-            const $ = id => document.getElementById(id);
+        function fmtDate(ts) {
+            return new Date(ts).toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            }).replace(/\. /g, "-").replace(".", "");
+        }
 
-            function toast(msg) {
-                const el = $("toast");
-                el.textContent = msg;
-                el.style.display = "block";
-                clearTimeout(toastTimer);
-                toastTimer = setTimeout(() => el.style.display = "none", 2200);
-            }
-
-            function esc(str = "") {
-                return String(str)
+        function esc(str = "") {
+            return String(str)
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;");
-            }
+        }
 
-            function fmtDate(ts) {
-                return new Date(ts).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit"
-                }).replace(/\. /g, "-").replace(".", "");
-            }
+        function stripText(html = "") {
+            const tmp = document.createElement("div");
+            tmp.innerHTML = html;
+            return tmp.textContent.replace(/\s+/g, " ").trim();
+        }
 
-            function renderMarkdown(source = "") {
-                return DOMPurify.sanitize(marked.parse(source));
-            }
+        function preview(body) {
+            return stripText(body).slice(0, 100) || "내용 없음";
+        }
 
-            function renderEntryBody(entry) {
-                if (entry.format === "markdown") return renderMarkdown(entry.body || "");
-                return DOMPurify.sanitize(entry.body || "");
-            }
+        function toast(msg) {
+            const el = $("toast");
+            el.textContent = msg;
+            el.style.display = "block";
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.style.display = "none", 2000);
+        }
 
-            function bodyText(entry) {
-                const tmp = document.createElement("div");
-                tmp.innerHTML = renderEntryBody(entry);
-                return tmp.textContent.replace(/\s+/g, " ").trim();
-            }
-
-            function preview(entry) {
-                return bodyText(entry).slice(0, 110) || "내용 없음";
-            }
-
-            function htmlToMarkdownLite(html = "") {
-                const tmp = document.createElement("div");
-                tmp.innerHTML = DOMPurify.sanitize(html);
-                tmp.querySelectorAll("pre").forEach(pre => {
-                pre.textContent = "\\n```\\n" + pre.textContent.trim() + "\\n```\\n";
-                });
-                return tmp.textContent.replace(/\n{3,}/g, "\n\n").trim();
-            }
-
-            function getFilteredEntries() {
-                const q = $("search-input").value.trim().toLowerCase();
-                return entries.filter(entry => {
+        function getFilteredEntries() {
+            const q = $("search-input").value.trim().toLowerCase();
+            return entries.filter(entry => {
                 const tags = entry.tags || [];
-                const tagOk = !activeTag || tags.includes(activeTag);
-                if (!tagOk) return false;
-
+                if (activeTag && !tags.includes(activeTag)) return false;
                 if (!q) return true;
+
                 const haystack = [
                     entry.title || "",
-                    bodyText(entry),
+                    stripText(entry.body || ""),
                     tags.join(" ")
                 ].join(" ").toLowerCase();
                 return haystack.includes(q);
-                });
-            }
+            });
+        }
 
-            function renderTagFilters() {
-                const counts = new Map();
-                entries.forEach(entry => {
+        function renderTagFilters() {
+            const counts = new Map();
+            entries.forEach(entry => {
                 (entry.tags || []).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1));
-                });
+            });
 
-                const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-                $("tag-filter-bar").innerHTML = tags.map(([tag, count]) => `
-                <button class="tag-filter ${activeTag === tag ? "active" : ""}" type="button" data-tag="${esc(tag)}">
-                    #${esc(tag)} ${count}
-                </button>
-                `).join("");
+            $("tag-filter-bar").innerHTML = [...counts.entries()]
+                .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+                .map(([tag, count]) => `
+          <button class="tag-filter ${activeTag === tag ? "active" : ""}" type="button" data-tag="${esc(tag)}">
+            #${esc(tag)} ${count}
+          </button>
+        `).join("");
 
-                $("tag-filter-bar").querySelectorAll(".tag-filter").forEach(btn => {
+            $("tag-filter-bar").querySelectorAll(".tag-filter").forEach(btn => {
                 btn.addEventListener("click", () => {
                     activeTag = btn.dataset.tag;
                     visibleCount = PAGE_SIZE;
                     renderList();
                 });
-                });
+            });
 
-                $("active-filter").classList.toggle("visible", !!activeTag);
-                $("active-filter-name").textContent = activeTag ? `#${activeTag}` : "";
-            }
+            $("active-filter").classList.toggle("visible", !!activeTag);
+            $("active-filter-name").textContent = activeTag ? `#${activeTag}` : "";
+        }
 
-            function renderList() {
-                const filtered = getFilteredEntries();
-                const visible = filtered.slice(0, visibleCount);
-                renderTagFilters();
+        function renderList() {
+            const filtered = getFilteredEntries();
+            const visible = filtered.slice(0, visibleCount);
+            renderTagFilters();
 
-                if (!visible.length) {
+            if (visible.length === 0) {
                 $("view-list").innerHTML = `
-                    <div class="empty">
-                    <div>[ ]</div>
-                    <div>조건에 맞는 일지가 없습니다.</div>
-                    </div>
-                `;
-                } else {
+          <div class="empty">
+            <div>[ ]</div>
+            <div>조건에 맞는 일지가 없습니다.</div>
+          </div>
+        `;
+            } else {
                 $("view-list").innerHTML = visible.map(entry => {
                     const tags = (entry.tags || []).map(tag => `<span class="tag">#${esc(tag)}</span>`).join("");
                     return `
-                    <article class="card" data-id="${esc(entry.id)}">
-                        <div class="card-dot"></div>
-                        <div class="card-date">${fmtDate(entry.createdAt)}</div>
-                        <h2 class="card-title">${esc(entry.title)}</h2>
-                        <div class="card-preview">${esc(preview(entry))}</div>
-                        ${tags ? `<div class="tag-row">${tags}</div>` : ""}
-                    </article>
-                    `;
+            <div class="card" data-id="${esc(entry.id)}">
+              <div class="card-dot"></div>
+              <div class="card-date">${fmtDate(entry.createdAt)}</div>
+              <div class="card-title">${esc(entry.title)}</div>
+              <div class="card-preview">${esc(preview(entry.body))}</div>
+              ${tags ? `<div class="card-tag">${tags}</div>` : ""}
+            </div>
+          `;
                 }).join("");
-                }
+            }
 
-                $("view-list").querySelectorAll(".card").forEach(card => {
+            $("view-list").querySelectorAll(".card").forEach(card => {
                 card.addEventListener("click", () => showDetail(card.dataset.id));
-                });
+            });
 
-                $("list-footer").classList.toggle("visible", filtered.length > visibleCount);
+            $("list-footer").classList.toggle("visible", filtered.length > visibleCount);
+        }
+
+        function showList() {
+            currentId = null;
+            $("btn-new").style.display = "";
+            $("list-tools").style.display = "grid";
+            $("tag-filter-bar").style.display = "flex";
+            $("view-list").style.display = "grid";
+            $("view-detail").style.display = "none";
+            renderList();
+        }
+
+        function showDetail(id) {
+            currentId = id;
+            $("btn-new").style.display = "none";
+            $("list-tools").style.display = "none";
+            $("tag-filter-bar").style.display = "none";
+            $("view-list").style.display = "none";
+            $("list-footer").classList.remove("visible");
+            $("view-detail").style.display = "block";
+            if (id) renderRead();
+            else renderEdit(null);
+        }
+
+        function highlightCode(root) {
+            root.querySelectorAll("pre").forEach(pre => {
+                if (pre.querySelector("code")) return;
+                const code = document.createElement("code");
+                code.textContent = pre.textContent;
+                pre.textContent = "";
+                pre.appendChild(code);
+            });
+            root.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
+        }
+
+        function renderRead() {
+            const entry = entries.find(x => x.id === currentId);
+            if (!entry) {
+                showList();
+                return;
             }
 
-            function showList() {
-                currentId = null;
-                $("btn-new").style.display = "";
-                $("list-tools").style.display = "block";
-                $("view-list").style.display = "grid";
-                $("view-detail").style.display = "none";
-                renderList();
+            $("section-read").style.display = "block";
+            $("section-edit").style.display = "none";
+
+            let dateStr = fmtDate(entry.createdAt);
+            if (entry.updatedAt !== entry.createdAt) {
+                dateStr += `<span style="color:var(--text3);margin-left:10px">수정 ${fmtDate(entry.updatedAt)}</span>`;
             }
 
-            function showDetail(id) {
-                currentId = id;
-                $("btn-new").style.display = "none";
-                $("list-tools").style.display = "none";
-                $("view-list").style.display = "none";
-                $("list-footer").classList.remove("visible");
-                $("view-detail").style.display = "block";
-                if (id) renderRead();
-                else renderEdit(null);
-            }
-
-            function renderRead() {
-                const entry = entries.find(x => x.id === currentId);
-                if (!entry) { showList(); return; }
-
-                $("section-read").style.display = "block";
-                $("section-edit").style.display = "none";
-                $("detail-date").innerHTML = entry.updatedAt !== entry.createdAt
-                ? `${fmtDate(entry.createdAt)} <span style="color:var(--dim);margin-left:10px">수정 ${fmtDate(entry.updatedAt)}</span>`
-                : fmtDate(entry.createdAt);
-                $("detail-title").textContent = entry.title;
-                $("detail-tags").innerHTML = (entry.tags || [])
+            $("detail-date").innerHTML = dateStr;
+            $("detail-title").textContent = entry.title;
+            $("detail-body").innerHTML = entry.body || "";
+            $("detail-tags").innerHTML = (entry.tags || [])
                 .map(tag => `<button class="tag tag-link" type="button" data-tag="${esc(tag)}">#${esc(tag)}</button>`)
                 .join("");
-                $("detail-body").innerHTML = renderEntryBody(entry);
 
-                $("detail-tags").querySelectorAll(".tag-link").forEach(btn => {
+            $("detail-tags").querySelectorAll(".tag-link").forEach(btn => {
                 btn.addEventListener("click", () => {
                     activeTag = btn.dataset.tag;
                     visibleCount = PAGE_SIZE;
                     showList();
                 });
-                });
+            });
 
-                highlightCode($("detail-body"));
-                renderToc();
-            }
+            highlightCode($("detail-body"));
+        }
 
-            function renderToc() {
-                const headings = [...$("detail-body").querySelectorAll("h1, h2, h3")];
-                if (!headings.length) {
-                $("toc").classList.add("empty");
-                $("toc").innerHTML = "";
-                return;
-                }
+        function renderEdit(id) {
+            const entry = id ? entries.find(x => x.id === id) : null;
+            $("section-read").style.display = "none";
+            $("section-edit").style.display = "block";
+            $("editor-title").value = entry ? entry.title : "";
+            $("editor-body").innerHTML = entry ? entry.body : "";
+            $("editor-body").setAttribute("data-placeholder",
+                "오늘의 개발 일지를 작성하세요.\n\n버그 픽스, 새 기능, 배운 것, 막힌 부분을 자유롭게 기록해보세요."
+            );
+            editTags = entry ? [...(entry.tags || [])] : [];
+            renderTagChips();
+            $("editor-title").focus();
+        }
 
-                headings.forEach((heading, index) => {
-                if (!heading.id) heading.id = `heading-${index + 1}`;
-                });
+        function renderTagChips() {
+            $("tag-chips").innerHTML = editTags.map((tag, index) => `
+        <span class="tag-chip">#${esc(tag)}<button data-index="${index}" type="button">×</button></span>
+      `).join("");
 
-                $("toc").classList.remove("empty");
-                $("toc").innerHTML = `
-                <div class="toc-title">CONTENTS</div>
-                ${headings.map(heading => `
-                    <a class="${heading.tagName.toLowerCase()}" href="#${heading.id}">${esc(heading.textContent)}</a>
-                `).join("")}
-                `;
-            }
-
-            function renderEdit(id) {
-                const entry = id ? entries.find(x => x.id === id) : null;
-                $("section-read").style.display = "none";
-                $("section-edit").style.display = "block";
-                $("editor-title").value = entry ? entry.title : "";
-                $("editor-body").value = entry
-                ? (entry.format === "markdown" ? entry.body : htmlToMarkdownLite(entry.body))
-                : "";
-                editTags = entry ? [...(entry.tags || [])] : [];
-                setEditorMode("write");
-                renderTagChips();
-                updatePreview();
-                $("editor-title").focus();
-            }
-
-            function setEditorMode(mode) {
-                const pane = $("editor-pane");
-                pane.className = "editor-pane";
-                if (mode !== "write") pane.classList.add(mode);
-                document.querySelectorAll(".tab-btn").forEach(btn => {
-                btn.classList.toggle("active", btn.dataset.mode === mode);
-                });
-                if (mode !== "write") updatePreview();
-            }
-
-            function updatePreview() {
-                $("editor-preview").innerHTML = renderMarkdown($("editor-body").value);
-                highlightCode($("editor-preview"));
-            }
-
-            function highlightCode(root) {
-                root.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
-            }
-
-            function renderTagChips() {
-                $("tag-chips").innerHTML = editTags.map((tag, index) => `
-                <span class="tag-chip">#${esc(tag)}<button type="button" data-index="${index}">×</button></span>
-                `).join("");
-                $("tag-chips").querySelectorAll("button").forEach(btn => {
+            $("tag-chips").querySelectorAll("button").forEach(btn => {
                 btn.addEventListener("click", event => {
                     event.stopPropagation();
                     editTags.splice(Number(btn.dataset.index), 1);
                     renderTagChips();
                 });
-                });
-            }
+            });
+        }
 
-            function addTag(raw) {
-                const tag = raw.trim().replace(/^#+/, "").replace(/\s+/g, "-").toLowerCase();
-                if (!tag || editTags.includes(tag)) return;
-                editTags.push(tag);
-                renderTagChips();
-            }
+        function addTag(raw) {
+            const tag = raw.trim().replace(/^#+/, "").replace(/\s+/g, "-").toLowerCase();
+            if (!tag || editTags.includes(tag)) return;
+            editTags.push(tag);
+            renderTagChips();
+        }
 
-            async function load() {
-                try {
+        async function load() {
+            try {
                 const res = await fetch(`${API_BASE}/api/entries`);
                 const data = await res.json();
                 entries = (data.entries || []).filter(entry => entry.id);
                 entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                 renderList();
-                } catch {
+            } catch {
                 toast("데이터를 불러오지 못했습니다.");
-                }
             }
+        }
 
-            async function save() {
-                const res = await fetch(`${API_BASE}/api/entries`, {
+        async function save() {
+            const res = await fetch(`${API_BASE}/api/entries`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${sessionStorage.getItem("devlog_token") || ""}`
                 },
                 body: JSON.stringify({ entries })
-                });
+            });
 
-                if (!res.ok) throw new Error("save failed");
+            if (!res.ok) throw new Error("save failed");
+        }
+
+        function cleanEditorBody() {
+            const editor = $("editor-body");
+            if (editor.innerHTML === "<br>" || editor.innerHTML.trim() === "") {
+                editor.innerHTML = "";
+            }
+        }
+
+        $("tag-input-row").addEventListener("click", () => $("tag-input").focus());
+
+        $("tag-input").addEventListener("keydown", event => {
+            const val = event.target.value;
+            if (event.key === "Enter" || event.key === ",") {
+                event.preventDefault();
+                addTag(val);
+                event.target.value = "";
+            } else if (event.key === "Backspace" && !val && editTags.length) {
+                editTags.pop();
+                renderTagChips();
+            }
+        });
+
+        $("tag-input").addEventListener("blur", event => {
+            if (event.target.value.trim()) {
+                addTag(event.target.value);
+                event.target.value = "";
+            }
+        });
+
+        $("editor-body").addEventListener("input", cleanEditorBody);
+
+        $("btn-code-block").addEventListener("click", () => {
+            const editor = $("editor-body");
+            editor.focus();
+
+            const pre = document.createElement("pre");
+            pre.textContent = "";
+
+            const after = document.createElement("div");
+            after.innerHTML = "<br>";
+
+            const sel = window.getSelection();
+            if (sel.rangeCount && editor.contains(sel.anchorNode)) {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(after);
+                range.insertNode(pre);
+
+                const newRange = document.createRange();
+                newRange.setStart(pre, 0);
+                newRange.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+            } else {
+                editor.appendChild(pre);
+                editor.appendChild(after);
+            }
+        });
+
+        $("editor-body").addEventListener("keydown", function (event) {
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+
+            let node = sel.anchorNode;
+            let pre = null;
+            while (node && node !== this) {
+                if (node.nodeName === "PRE") {
+                    pre = node;
+                    break;
+                }
+                node = node.parentNode;
+            }
+            if (!pre) return;
+
+            if (event.key === "Escape") {
+                event.preventDefault();
+                const p = document.createElement("div");
+                p.innerHTML = "<br>";
+                pre.parentNode.insertBefore(p, pre.nextSibling);
+                const newRange = document.createRange();
+                newRange.setStart(p, 0);
+                newRange.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+            }
+        });
+
+        $("btn-new").addEventListener("click", () => showDetail(null));
+        $("btn-back").addEventListener("click", showList);
+        $("btn-edit").addEventListener("click", () => renderEdit(currentId));
+        $("btn-cancel").addEventListener("click", () => currentId ? renderRead() : showList());
+
+        $("btn-more").addEventListener("click", () => {
+            visibleCount += PAGE_SIZE;
+            renderList();
+        });
+
+        $("search-input").addEventListener("input", () => {
+            visibleCount = PAGE_SIZE;
+            renderList();
+        });
+
+        $("clear-filter").addEventListener("click", () => {
+            activeTag = "";
+            visibleCount = PAGE_SIZE;
+            renderList();
+        });
+
+        $("btn-save").addEventListener("click", async () => {
+            const title = $("editor-title").value.trim();
+            const body = $("editor-body").innerHTML;
+            if (!title) {
+                toast("제목을 입력해주세요.");
+                return;
             }
 
-            $("btn-login").addEventListener("click", async () => {
-                try {
+            const tagInput = $("tag-input");
+            if (tagInput.value.trim()) {
+                addTag(tagInput.value);
+                tagInput.value = "";
+            }
+
+            const now = Date.now();
+            if (currentId) {
+                entries = entries.map(entry => entry.id === currentId
+                    ? { ...entry, title, body, tags: [...editTags], updatedAt: now }
+                    : entry
+                );
+            } else {
+                currentId = String(now);
+                entries.unshift({
+                    id: currentId,
+                    title,
+                    body,
+                    tags: [...editTags],
+                    createdAt: now,
+                    updatedAt: now
+                });
+            }
+
+            try {
+                await save();
+                renderRead();
+                toast("저장되었습니다.");
+            } catch {
+                toast("저장에 실패했습니다. 다시 로그인해보세요.");
+            }
+        });
+
+        $("btn-delete").addEventListener("click", () => {
+            const entry = entries.find(x => x.id === currentId);
+            $("modal-sub").innerHTML = `"${esc(entry?.title || "")}"<br>삭제한 일지는 복구할 수 없습니다.`;
+            $("modal").classList.add("open");
+        });
+
+        $("modal-cancel").addEventListener("click", () => $("modal").classList.remove("open"));
+
+        $("modal-confirm").addEventListener("click", async () => {
+            entries = entries.filter(entry => entry.id !== currentId);
+            try {
+                await save();
+                $("modal").classList.remove("open");
+                showList();
+                toast("삭제되었습니다.");
+            } catch {
+                toast("삭제 저장에 실패했습니다.");
+            }
+        });
+
+        $("modal").addEventListener("click", event => {
+            if (event.target === $("modal")) {
+                $("modal").classList.remove("open");
+            }
+        });
+
+        $("btn-login").addEventListener("click", async () => {
+            try {
                 const res = await fetch(`${API_BASE}/api/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -890,140 +1283,25 @@
                 await load();
                 showList();
                 toast("반갑습니다.");
-                } catch {
+            } catch {
                 toast("로그인 요청에 실패했습니다.");
-                }
-            });
+            }
+        });
 
-            $("pw-input").addEventListener("keydown", event => {
-                if (event.key === "Enter") $("btn-login").click();
-            });
+        $("pw-input").addEventListener("keydown", event => {
+            if (event.key === "Enter") $("btn-login").click();
+        });
 
-            $("btn-new").addEventListener("click", () => showDetail(null));
-            $("btn-back").addEventListener("click", showList);
-            $("btn-edit").addEventListener("click", () => renderEdit(currentId));
-            $("btn-cancel").addEventListener("click", () => currentId ? renderRead() : showList());
-            $("btn-more").addEventListener("click", () => {
-                visibleCount += PAGE_SIZE;
-                renderList();
-            });
-
-            $("search-input").addEventListener("input", () => {
-                visibleCount = PAGE_SIZE;
-                renderList();
-            });
-
-            $("clear-filter").addEventListener("click", () => {
-                activeTag = "";
-                visibleCount = PAGE_SIZE;
-                renderList();
-            });
-
-            document.querySelectorAll(".tab-btn").forEach(btn => {
-                btn.addEventListener("click", () => setEditorMode(btn.dataset.mode));
-            });
-
-            $("editor-body").addEventListener("input", updatePreview);
-
-            $("tag-input-row").addEventListener("click", () => $("tag-input").focus());
-            $("tag-input").addEventListener("keydown", event => {
-                const val = event.target.value;
-                if (event.key === "Enter" || event.key === ",") {
-                event.preventDefault();
-                addTag(val);
-                event.target.value = "";
-                } else if (event.key === "Backspace" && !val && editTags.length) {
-                editTags.pop();
-                renderTagChips();
-                }
-            });
-            $("tag-input").addEventListener("blur", event => {
-                if (event.target.value.trim()) {
-                addTag(event.target.value);
-                event.target.value = "";
-                }
-            });
-
-            $("btn-save").addEventListener("click", async () => {
-                const title = $("editor-title").value.trim();
-                const tagInput = $("tag-input");
-                if (tagInput.value.trim()) {
-                addTag(tagInput.value);
-                tagInput.value = "";
-                }
-
-                if (!title) {
-                toast("제목을 입력해주세요.");
-                return;
-                }
-
-                const now = Date.now();
-                const body = $("editor-body").value;
-                if (currentId) {
-                entries = entries.map(entry => entry.id === currentId
-                    ? { ...entry, title, body, format: "markdown", tags: [...editTags], updatedAt: now }
-                    : entry
-                );
-                } else {
-                currentId = String(now);
-                entries.unshift({
-                    id: currentId,
-                    title,
-                    body,
-                    format: "markdown",
-                    tags: [...editTags],
-                    createdAt: now,
-                    updatedAt: now
-                });
-                }
-
-                try {
-                await save();
-                renderRead();
-                toast("저장되었습니다.");
-                } catch {
-                toast("저장에 실패했습니다. 다시 로그인해보세요.");
-                }
-            });
-
-            $("btn-delete").addEventListener("click", () => {
-                const entry = entries.find(x => x.id === currentId);
-                $("modal-sub").innerHTML = `"${esc(entry?.title || "")}"<br>삭제한 일지는 복구할 수 없습니다.`;
-                $("modal").classList.add("open");
-            });
-
-            $("modal-cancel").addEventListener("click", () => $("modal").classList.remove("open"));
-            $("modal").addEventListener("click", event => {
-                if (event.target === $("modal")) $("modal").classList.remove("open");
-            });
-
-            $("modal-confirm").addEventListener("click", async () => {
-                entries = entries.filter(entry => entry.id !== currentId);
-                try {
-                await save();
-                $("modal").classList.remove("open");
-                showList();
-                toast("삭제되었습니다.");
-                } catch {
-                toast("삭제 저장에 실패했습니다.");
-                }
-            });
-
-            (() => {
-                if (API_BASE.includes("YOUR-WORKER")) {
-                toast("API_BASE에 Worker 주소를 넣어주세요.");
-                }
-
-                if (sessionStorage.getItem("devlog_auth") === "true" && sessionStorage.getItem("devlog_token")) {
+        (() => {
+            if (sessionStorage.getItem("devlog_auth") === "true" && sessionStorage.getItem("devlog_token")) {
                 $("login-screen").style.display = "none";
                 load();
                 showList();
-                } else {
+            } else {
                 $("login-screen").style.display = "flex";
-                }
-            })();
-        </script>
-    </body>
-</html>
+            }
+        })();
+    </script>
+</body>
 
-<!-- https://noxerith.github.io/devlog/ -->
+</html>
