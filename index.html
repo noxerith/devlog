@@ -644,18 +644,26 @@
         }
 
         function applyHashHeadings(root) {
+            [...root.childNodes].forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE && node.textContent.replace(/\u00a0/g, " ").trim()) {
+                    const div = document.createElement("div");
+                    div.textContent = node.textContent;
+                    node.replaceWith(div);
+                }
+            });
+
             const blocks = [...root.querySelectorAll("div, p")];
             let index = 0;
 
             blocks.forEach(block => {
                 if (block.closest("pre")) return;
+                if (block.querySelector("div, p")) return;
 
                 const text = block.textContent.replace(/\u00a0/g, " ").trim();
-                const match = text.replace(/\u00a0/g, " ").match(/^(#{1,2})\s+(.+)$/);
+                const match = text.match(/^(#{1,2})\s+(.+)$/);
                 if (!match) return;
-                if (match[1].length > 2) return;
-                const level = match[1].length;
 
+                const level = match[1].length;
                 const heading = document.createElement(level === 1 ? "h2" : "h3");
                 heading.className = level === 1 ? "body-heading-1" : "body-heading-2";
                 heading.dataset.headingLevel = String(level);
