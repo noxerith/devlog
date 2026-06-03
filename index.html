@@ -40,23 +40,11 @@
             min-height: 100vh;
         }
 
-        button,
-        input {
-            font-family: inherit;
-        }
+        button, input { font-family: inherit; }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border2);
-            border-radius: 3px;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
         header {
             position: sticky;
@@ -71,274 +59,112 @@
             gap: 16px;
         }
 
-        .logo {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: .08em;
-            color: var(--accent);
-        }
-
-        .logo span {
-            color: var(--text3);
-            font-weight: 400;
-            font-size: 12px;
-            margin-left: 10px;
-        }
+        .logo { font-size: 15px; font-weight: 700; letter-spacing: .08em; color: var(--accent); }
+        .logo span { color: var(--text3); font-weight: 400; font-size: 12px; margin-left: 10px; }
 
         .btn {
-            font-family: inherit;
-            font-size: 12px;
-            letter-spacing: .06em;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 8px 18px;
-            transition: all .15s;
+            font-family: inherit; font-size: 12px; letter-spacing: .06em;
+            border-radius: 4px; cursor: pointer; padding: 8px 18px; transition: all .15s;
         }
 
-        #btn-new {
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-        }
-
-        #btn-new:hover {
-            background: var(--accent);
-            color: #0d0d0d;
-        }
+        #btn-new { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        #btn-new:hover { background: var(--accent); color: #0d0d0d; }
 
         #list-tools {
-            display: grid;
-            grid-template-columns: minmax(180px, 1fr) auto;
-            gap: 10px;
-            padding: 24px 32px 0;
+            display: grid; grid-template-columns: minmax(180px, 1fr) auto;
+            gap: 10px; padding: 24px 32px 0;
         }
 
         .search-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 0 12px;
-            min-width: 0;
+            display: flex; align-items: center; gap: 10px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 5px; padding: 0 12px; min-width: 0;
         }
-
-        .search-box span {
-            color: var(--text3);
-            font-size: 13px;
-        }
+        .search-box span { color: var(--text3); font-size: 13px; }
 
         #search-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text);
-            padding: 11px 0;
-            font-size: 12px;
+            width: 100%; background: transparent; border: none; outline: none;
+            color: var(--text); padding: 11px 0; font-size: 12px;
         }
 
         #active-filter {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 0 10px;
-            color: var(--text2);
-            min-height: 39px;
-            font-size: 11px;
+            display: none; align-items: center; gap: 8px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 5px; padding: 0 10px; color: var(--text2);
+            min-height: 39px; font-size: 11px;
         }
-
-        #active-filter.visible {
-            display: flex;
-        }
-
-        #active-filter strong {
-            color: var(--accent);
-            font-weight: 500;
-        }
+        #active-filter.visible { display: flex; }
+        #active-filter strong { color: var(--accent); font-weight: 500; }
 
         #clear-filter {
-            background: transparent;
-            border: none;
-            color: var(--text3);
-            cursor: pointer;
-            font-size: 15px;
-            line-height: 1;
+            background: transparent; border: none; color: var(--text3);
+            cursor: pointer; font-size: 15px; line-height: 1;
         }
 
-        #tag-filter-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            padding: 12px 32px 0;
-        }
+        #tag-filter-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 32px 0; }
 
         .tag-filter {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            color: var(--text3);
-            cursor: pointer;
-            font-size: 10px;
-            letter-spacing: .05em;
-            padding: 4px 8px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 3px; color: var(--text3); cursor: pointer;
+            font-size: 10px; letter-spacing: .05em; padding: 4px 8px;
         }
-
-        .tag-filter:hover,
-        .tag-filter.active {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
+        .tag-filter:hover, .tag-filter.active { border-color: var(--accent); color: var(--accent); }
 
         #view-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 16px;
-            padding: 24px 32px 18px;
+            gap: 16px; padding: 24px 32px 18px;
         }
 
         .card {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 22px 22px 18px;
-            cursor: pointer;
-            transition: border-color .15s, transform .1s;
-            position: relative;
-            min-height: 180px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 6px; padding: 22px 22px 18px; cursor: pointer;
+            transition: border-color .15s, transform .1s; position: relative; min-height: 180px;
         }
-
-        .card:hover {
-            border-color: var(--accent2);
-            transform: translateY(-2px);
-        }
-
-        .card:hover .card-dot {
-            background: var(--accent);
-        }
+        .card:hover { border-color: var(--accent2); transform: translateY(-2px); }
+        .card:hover .card-dot { background: var(--accent); }
 
         .card-dot {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--border2);
-            transition: background .15s;
+            position: absolute; top: 14px; right: 16px;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--border2); transition: background .15s;
         }
 
-        .card-date {
-            font-size: 11px;
-            color: var(--text3);
-            letter-spacing: .06em;
-            margin-bottom: 10px;
-        }
-
-        .card-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 8px;
-            line-height: 1.4;
-            padding-right: 12px;
-        }
-
+        .card-date { font-size: 11px; color: var(--text3); letter-spacing: .06em; margin-bottom: 10px; }
+        .card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.4; padding-right: 12px; }
         .card-preview {
-            font-size: 12px;
-            color: var(--text2);
-            line-height: 1.6;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-size: 12px; color: var(--text2); line-height: 1.6;
+            display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3;
+            -webkit-box-orient: vertical; overflow: hidden;
         }
 
-        .card-tag {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 12px;
-        }
+        .card-tag { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
 
         .tag {
-            display: inline-block;
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            font-size: 10px;
-            color: var(--text3);
-            padding: 2px 8px;
-            letter-spacing: .05em;
+            display: inline-block; background: var(--bg3); border: 1px solid var(--border);
+            border-radius: 3px; font-size: 10px; color: var(--text3); padding: 2px 8px; letter-spacing: .05em;
         }
-
-        button.tag {
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        button.tag:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
+        button.tag { cursor: pointer; font-family: inherit; }
+        button.tag:hover { border-color: var(--accent); color: var(--accent); }
 
         .empty {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 80px 0;
-            color: var(--text3);
-            font-size: 13px;
-            letter-spacing: .05em;
-            line-height: 2;
+            grid-column: 1 / -1; text-align: center; padding: 80px 0;
+            color: var(--text3); font-size: 13px; letter-spacing: .05em; line-height: 2;
         }
 
-        #pagination {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            padding: 0 32px 36px;
-        }
-
-        #pagination.visible {
-            display: flex;
-        }
+        #pagination { display: none; justify-content: center; align-items: center; gap: 6px; padding: 0 32px 36px; }
+        #pagination.visible { display: flex; }
 
         .page-btn {
-            min-width: 32px;
-            height: 32px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text3);
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 11px;
-            transition: all .15s;
+            min-width: 32px; height: 32px; background: transparent;
+            border: 1px solid var(--border); border-radius: 4px; color: var(--text3);
+            cursor: pointer; font-family: inherit; font-size: 11px; transition: all .15s;
         }
+        .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .page-btn.active { background: var(--accent); border-color: var(--accent); color: #0d0d0d; font-weight: 700; }
+        .page-btn:disabled { cursor: default; opacity: .35; }
 
-        .page-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .page-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #0d0d0d;
-            font-weight: 700;
-        }
-
-        .page-btn:disabled {
-            cursor: default;
-            opacity: .35;
-        }
-
+        /* ── 상세 뷰 ── */
         #view-detail {
             display: none;
             max-width: 980px;
@@ -346,534 +172,223 @@
             padding: 40px 32px 80px;
         }
 
+        /* [FIX 1] btn-back 은 레이아웃 밖, 단독으로 위에 */
         .btn-back {
-            background: transparent;
-            border: none;
-            color: var(--text3);
-            font-family: inherit;
-            font-size: 12px;
-            letter-spacing: .06em;
-            cursor: pointer;
-            padding: 0;
-            margin-bottom: 28px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: color .15s;
+            background: transparent; border: none; color: var(--text3);
+            font-family: inherit; font-size: 12px; letter-spacing: .06em;
+            cursor: pointer; padding: 0; margin-bottom: 28px;
+            display: flex; align-items: center; gap: 8px; transition: color .15s;
         }
+        .btn-back:hover { color: var(--text2); }
 
-        .btn-back:hover {
-            color: var(--text2);
-        }
+        .detail-date { font-size: 11px; color: var(--text3); letter-spacing: .08em; margin-bottom: 12px; }
+        .detail-title { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+        .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
 
-        .detail-date {
-            font-size: 11px;
-            color: var(--text3);
-            letter-spacing: .08em;
-            margin-bottom: 12px;
-        }
+        .divider { border: none; border-top: 1px solid var(--border); margin: 0 0 24px; }
 
-        .detail-title {
-            font-size: 26px;
-            font-weight: 700;
-            line-height: 1.3;
-            margin-bottom: 16px;
-        }
+        .detail-body { font-size: 14px; color: var(--text2); line-height: 1.9; word-break: break-word; }
 
-        .detail-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 24px;
-        }
+        /* [FIX 3] 헤더(날짜+제목+태그)는 그리드 밖, 본문+CONTENTS만 그리드로 */
+        .read-header { margin-bottom: 0; }
 
-        .divider {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 0 0 24px;
-        }
-
-        .detail-body {
-            font-size: 14px;
-            color: var(--text2);
-            line-height: 1.9;
-            word-break: break-word;
-        }
-
-        .read-layout {
+        .read-body-layout {
             display: grid;
-            grid-template-columns: 180px minmax(0, 720px);
+            grid-template-columns: minmax(0, 720px) 180px;
             gap: 28px;
             align-items: start;
+            margin-top: 0;
         }
 
-        .read-layout.no-nav {
+        .read-body-layout.no-nav {
             grid-template-columns: minmax(0, 720px);
-            justify-content: center;
         }
 
         .heading-nav {
             position: sticky;
             top: 90px;
-            border-right: 1px solid var(--border);
-            padding-right: 14px;
+            border-left: 1px solid var(--border);
+            padding-left: 14px;
             max-height: calc(100vh - 120px);
             overflow: auto;
         }
 
-        .heading-nav.empty {
-            display: none;
-        }
+        .heading-nav.empty { display: none; }
 
-        .heading-nav-title {
-            color: var(--text3);
-            font-size: 10px;
-            letter-spacing: .08em;
-            margin-bottom: 10px;
-        }
+        .heading-nav-title { color: var(--text3); font-size: 10px; letter-spacing: .08em; margin-bottom: 10px; }
 
         .heading-nav button {
-            display: block;
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text3);
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 11px;
-            line-height: 1.5;
-            text-align: left;
-            padding: 4px 0;
-            word-break: break-word;
-            transition: color .15s;
+            display: block; width: 100%; background: transparent; border: none;
+            color: var(--text3); cursor: pointer; font-family: inherit; font-size: 11px;
+            line-height: 1.5; text-align: left; padding: 4px 0; word-break: break-word; transition: color .15s;
         }
+        .heading-nav button:hover { color: var(--accent); }
 
-        .heading-nav button:hover {
-            color: var(--accent);
-        }
-
-        .heading-nav .level-2 {
-            padding-left: 14px;
-        }
-
-        .heading-nav .level-2::before {
-            content: "└ ";
-            color: var(--text3);
-        }
+        .heading-nav .level-2 { padding-left: 14px; }
+        .heading-nav .level-2::before { content: "└ "; color: var(--text3); }
 
         .detail-body .body-heading-1,
         .detail-body .body-heading-2 {
-            color: var(--text);
-            font-weight: 700;
-            line-height: 1.35;
-            scroll-margin-top: 90px;
+            color: var(--text); font-weight: 700; line-height: 1.35; scroll-margin-top: 90px;
         }
+        .detail-body .body-heading-1 { font-size: 21px; margin: 28px 0 12px; }
+        .detail-body .body-heading-2 { font-size: 17px; margin: 22px 0 10px; color: var(--text); }
 
-        .detail-body .body-heading-1 {
-            font-size: 21px;
-            margin: 28px 0 12px;
-        }
-
-        .detail-body .body-heading-2 {
-            font-size: 17px;
-            margin: 22px 0 10px;
-            color: var(--text);
-        }
-
+        /* ── 에디터 ── */
         #editor-title {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
-            font-family: inherit;
-            font-size: 22px;
-            font-weight: 700;
-            padding: 8px 0;
-            outline: none;
-            margin-bottom: 20px;
-            letter-spacing: .01em;
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid var(--border); color: var(--text);
+            font-family: inherit; font-size: 22px; font-weight: 700;
+            padding: 8px 0; outline: none; margin-bottom: 20px; letter-spacing: .01em;
         }
-
-        #editor-title::placeholder {
-            color: var(--text3);
-        }
+        #editor-title::placeholder { color: var(--text3); }
 
         #editor-body {
-            width: 100%;
-            min-height: 300px;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text);
-            font-family: inherit;
-            font-size: 14px;
-            line-height: 1.9;
-            padding: 16px;
-            outline: none;
-            word-break: break-word;
+            width: 100%; min-height: 300px; background: var(--bg2);
+            border: 1px solid var(--border); border-radius: 4px; color: var(--text);
+            font-family: inherit; font-size: 14px; line-height: 1.9;
+            padding: 16px; outline: none; word-break: break-word;
         }
-
-        #editor-body:focus {
-            border-color: var(--border2);
-        }
-
+        #editor-body:focus { border-color: var(--border2); }
         #editor-body:empty::before {
-            content: attr(data-placeholder);
-            color: var(--text3);
-            pointer-events: none;
-            display: block;
-            white-space: pre-wrap;
+            content: attr(data-placeholder); color: var(--text3);
+            pointer-events: none; display: block; white-space: pre-wrap;
         }
 
-        .editor-toolbar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
+        .editor-toolbar { display: flex; gap: 8px; margin-bottom: 8px; }
         .editor-toolbar button {
-            background: transparent;
-            border: 1px solid var(--border2);
-            color: var(--text3);
-            font-family: inherit;
-            font-size: 11px;
-            letter-spacing: .05em;
-            padding: 4px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all .15s;
+            background: transparent; border: 1px solid var(--border2); color: var(--text3);
+            font-family: inherit; font-size: 11px; letter-spacing: .05em;
+            padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all .15s;
         }
+        .editor-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
 
-        .editor-toolbar button:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+        #editor-body pre, .detail-body pre {
+            background: #0d1117; border: 1px solid var(--border2);
+            border-left: 3px solid var(--accent); border-radius: 4px;
+            padding: 12px 16px; margin: 10px 0;
+            font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.6;
+            color: var(--text); white-space: pre-wrap; word-break: break-all; overflow-x: auto;
         }
+        .detail-body code { font-family: "JetBrains Mono", monospace; }
 
-        #editor-body pre,
-        .detail-body pre {
-            background: #0d1117;
-            border: 1px solid var(--border2);
-            border-left: 3px solid var(--accent);
-            border-radius: 4px;
-            padding: 12px 16px;
-            margin: 10px 0;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text);
-            white-space: pre-wrap;
-            word-break: break-all;
-            overflow-x: auto;
-        }
-
-        .detail-body code {
-            font-family: "JetBrains Mono", monospace;
-        }
-
-        .detail-body img,
-        #editor-body img {
-            max-width: 100%;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            margin: 12px 0;
-            display: block;
+        .detail-body img, #editor-body img {
+            max-width: 100%; border-radius: 4px; border: 1px solid var(--border);
+            margin: 12px 0; display: block;
         }
 
         .action-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 24px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
+            display: flex; gap: 10px; margin-top: 24px;
+            justify-content: flex-end; flex-wrap: wrap;
         }
 
         .btn-save {
-            background: var(--accent);
-            border: none;
-            color: #0d0d0d;
-            padding: 10px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: .06em;
-            transition: background .15s;
+            background: var(--accent); border: none; color: #0d0d0d;
+            padding: 10px 24px; border-radius: 4px; cursor: pointer;
+            font-family: inherit; font-size: 12px; font-weight: 700;
+            letter-spacing: .06em; transition: background .15s;
         }
+        .btn-save:hover { background: var(--accent2); }
 
-        .btn-save:hover {
-            background: var(--accent2);
+        .btn-cancel, .btn-edit {
+            background: transparent; border: 1px solid var(--border); color: var(--text2);
+            padding: 10px 18px; border-radius: 4px; cursor: pointer;
+            font-family: inherit; font-size: 12px; letter-spacing: .06em; transition: all .15s;
         }
-
-        .btn-cancel,
-        .btn-edit {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text2);
-            padding: 10px 18px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 12px;
-            letter-spacing: .06em;
-            transition: all .15s;
-        }
-
-        .btn-edit {
-            padding: 8px 16px;
-        }
-
-        .btn-cancel:hover,
-        .btn-edit:hover {
-            border-color: var(--border2);
-            color: var(--text);
-        }
+        .btn-edit { padding: 8px 16px; }
+        .btn-cancel:hover, .btn-edit:hover { border-color: var(--border2); color: var(--text); }
 
         .btn-delete {
-            background: transparent;
-            border: 1px solid #2a1010;
-            color: var(--danger);
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 12px;
-            letter-spacing: .06em;
-            transition: background .15s;
+            background: transparent; border: 1px solid #2a1010; color: var(--danger);
+            padding: 8px 16px; border-radius: 4px; cursor: pointer;
+            font-family: inherit; font-size: 12px; letter-spacing: .06em; transition: background .15s;
         }
-
-        .btn-delete:hover {
-            background: var(--danger-bg);
-        }
+        .btn-delete:hover { background: var(--danger-bg); }
 
         .tag-input-row {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 8px 10px;
-            margin-bottom: 16px;
-            min-height: 38px;
-            cursor: text;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+            border: 1px solid var(--border); border-radius: 4px;
+            padding: 8px 10px; margin-bottom: 16px; min-height: 38px; cursor: text;
         }
-
-        .tag-input-row:focus-within {
-            border-color: var(--border2);
-        }
+        .tag-input-row:focus-within { border-color: var(--border2); }
 
         .tag-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--bg3);
-            border: 1px solid var(--border2);
-            border-radius: 3px;
-            font-size: 11px;
-            color: var(--text2);
-            padding: 2px 8px;
-            letter-spacing: .04em;
+            display: inline-flex; align-items: center; gap: 5px;
+            background: var(--bg3); border: 1px solid var(--border2);
+            border-radius: 3px; font-size: 11px; color: var(--text2);
+            padding: 2px 8px; letter-spacing: .04em;
         }
-
         .tag-chip button {
-            background: none;
-            border: none;
-            color: var(--text3);
-            cursor: pointer;
-            font-size: 13px;
-            line-height: 1;
-            padding: 0;
-            font-family: inherit;
-            transition: color .1s;
+            background: none; border: none; color: var(--text3);
+            cursor: pointer; font-size: 13px; line-height: 1;
+            padding: 0; font-family: inherit; transition: color .1s;
         }
-
-        .tag-chip button:hover {
-            color: var(--danger);
-        }
+        .tag-chip button:hover { color: var(--danger); }
 
         #tag-input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text);
-            font-family: inherit;
-            font-size: 11px;
-            min-width: 80px;
-            flex: 1;
-            letter-spacing: .04em;
+            background: transparent; border: none; outline: none; color: var(--text);
+            font-family: inherit; font-size: 11px; min-width: 80px; flex: 1; letter-spacing: .04em;
         }
-
-        #tag-input::placeholder {
-            color: var(--text3);
-        }
+        #tag-input::placeholder { color: var(--text3); }
 
         #modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .75);
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: 18px;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,.75); align-items: center;
+            justify-content: center; z-index: 100; padding: 18px;
         }
-
-        #modal.open {
-            display: flex;
-        }
+        #modal.open { display: flex; }
 
         .modal-box {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 32px;
-            width: 400px;
-            max-width: 90vw;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 32px; width: 400px; max-width: 90vw;
         }
-
-        .modal-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .modal-sub {
-            font-size: 12px;
-            color: var(--text2);
-            margin-bottom: 24px;
-            line-height: 1.7;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
+        .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 24px; line-height: 1.7; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
         .btn-confirm-del {
-            background: var(--danger-bg);
-            border: 1px solid #3a1515;
-            color: var(--danger);
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 12px;
-            letter-spacing: .06em;
-            transition: background .15s;
+            background: var(--danger-bg); border: 1px solid #3a1515; color: var(--danger);
+            padding: 10px 20px; border-radius: 4px; cursor: pointer;
+            font-family: inherit; font-size: 12px; letter-spacing: .06em; transition: background .15s;
         }
-
-        .btn-confirm-del:hover {
-            background: #2a0a0a;
-        }
+        .btn-confirm-del:hover { background: #2a0a0a; }
 
         #toast {
-            display: none;
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            background: var(--bg3);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 10px 18px;
-            border-radius: 4px;
-            font-size: 12px;
-            letter-spacing: .06em;
-            z-index: 200;
+            display: none; position: fixed; bottom: 28px; right: 28px;
+            background: var(--bg3); border: 1px solid var(--accent); color: var(--accent);
+            padding: 10px 18px; border-radius: 4px; font-size: 12px; letter-spacing: .06em; z-index: 200;
         }
 
-        #section-read,
-        #section-edit {
-            display: none;
-        }
+        #section-read, #section-edit { display: none; }
 
         #login-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            flex-direction: column;
-            gap: 20px;
-            padding: 20px;
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; flex-direction: column; gap: 20px; padding: 20px;
         }
-
-        .login-box {
-            text-align: center;
-            width: 300px;
-            max-width: 100%;
-        }
-
-        .login-box h1 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: var(--accent);
-        }
+        .login-box { text-align: center; width: 300px; max-width: 100%; }
+        .login-box h1 { font-size: 18px; margin-bottom: 20px; color: var(--accent); }
 
         #pw-input {
-            width: 100%;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: 4px;
-            font-family: inherit;
-            text-align: center;
-            outline: none;
-            margin-bottom: 12px;
+            width: 100%; background: var(--bg2); border: 1px solid var(--border);
+            color: var(--text); padding: 12px; border-radius: 4px;
+            font-family: inherit; text-align: center; outline: none; margin-bottom: 12px;
         }
-
-        #pw-input:focus {
-            border-color: var(--accent);
-        }
+        #pw-input:focus { border-color: var(--accent); }
 
         .btn-login {
-            width: 100%;
-            background: var(--accent);
-            border: none;
-            color: #0d0d0d;
-            padding: 12px;
-            border-radius: 4px;
-            font-weight: 700;
-            cursor: pointer;
+            width: 100%; background: var(--accent); border: none; color: #0d0d0d;
+            padding: 12px; border-radius: 4px; font-weight: 700; cursor: pointer;
         }
 
         @media (max-width: 700px) {
-            header {
-                padding: 16px;
-            }
-
-            .logo span {
-                display: none;
-            }
-
-            #list-tools {
-                grid-template-columns: 1fr;
-                padding: 18px 16px 0;
-            }
-
-            #tag-filter-bar,
-            #view-list {
-                padding-left: 16px;
-                padding-right: 16px;
-            }
-
-            #view-detail {
-                padding: 30px 16px 70px;
-            }
-
-            .read-layout,
-            .read-layout.no-nav {
-                display: block;
-            }
-
-            .heading-nav {
-                display: none;
-            }
+            header { padding: 16px; }
+            .logo span { display: none; }
+            #list-tools { grid-template-columns: 1fr; padding: 18px 16px 0; }
+            #tag-filter-bar, #view-list { padding-left: 16px; padding-right: 16px; }
+            #view-detail { padding: 30px 16px 70px; }
+            .read-body-layout, .read-body-layout.no-nav { display: block; }
+            .heading-nav { display: none; }
         }
     </style>
 </head>
@@ -909,43 +424,48 @@
     <div id="pagination"></div>
 
     <div id="view-detail">
+        <!-- [FIX 1] btn-back 은 레이아웃 그리드 완전 밖 -->
         <button class="btn-back" id="btn-back">← 목록으로</button>
 
         <div id="section-read">
-            <div class="read-layout no-nav" id="read-layout">
-                <aside class="heading-nav empty" id="heading-nav"></aside>
+            <!-- [FIX 1,3] 날짜·제목·태그는 그리드 밖, divider 아래 본문+nav만 그리드 -->
+            <div class="read-header">
+                <div class="detail-date" id="detail-date"></div>
+                <div class="detail-title" id="detail-title"></div>
+                <div class="detail-tags" id="detail-tags"></div>
+                <hr class="divider">
+            </div>
+
+            <div class="read-body-layout no-nav" id="read-body-layout">
                 <article>
-                    <div class="detail-date" id="detail-date"></div>
-                    <div class="detail-title" id="detail-title"></div>
-                    <div class="detail-tags" id="detail-tags"></div>
-                    <hr class="divider">
                     <div class="detail-body" id="detail-body"></div>
                     <div class="action-row">
                         <button class="btn-delete" id="btn-delete">삭제</button>
                         <button class="btn-edit" id="btn-edit">수정</button>
                     </div>
                 </article>
+                <!-- [FIX 3] CONTENTS가 본문 오른쪽에 위치 -->
+                <aside class="heading-nav empty" id="heading-nav"></aside>
             </div>
         </div>
+
         <div id="section-edit">
             <input id="editor-title" placeholder="제목" autocomplete="off">
-
             <div class="editor-toolbar">
                 <button type="button" id="btn-code-block">{ } 코드 블록</button>
             </div>
             <div id="editor-body" contenteditable="true" spellcheck="false"></div>
-
             <div class="tag-input-row" id="tag-input-row">
                 <span id="tag-chips"></span>
                 <input id="tag-input" placeholder="태그 입력 후 Enter  예: react, bug-fix">
             </div>
-
             <div class="action-row">
                 <button class="btn-cancel" id="btn-cancel">취소</button>
                 <button class="btn-save" id="btn-save">저장</button>
             </div>
         </div>
     </div>
+
     <div id="modal">
         <div class="modal-box">
             <div class="modal-title">일지를 삭제할까요?</div>
@@ -971,9 +491,7 @@
         let activeTag = "";
         let currentPage = 1;
 
-        function $(id) {
-            return document.getElementById(id);
-        }
+        function $(id) { return document.getElementById(id); }
 
         function fmtDate(ts) {
             const d = new Date(ts);
@@ -985,10 +503,8 @@
 
         function esc(str = "") {
             return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
 
         function stripText(html = "") {
@@ -997,9 +513,7 @@
             return tmp.textContent.replace(/\s+/g, " ").trim();
         }
 
-        function preview(body) {
-            return stripText(body).slice(0, 100) || "내용 없음";
-        }
+        function preview(body) { return stripText(body).slice(0, 100) || "내용 없음"; }
 
         function toast(msg) {
             const el = $("toast");
@@ -1015,12 +529,7 @@
                 const tags = entry.tags || [];
                 if (activeTag && !tags.includes(activeTag)) return false;
                 if (!q) return true;
-
-                const haystack = [
-                    entry.title || "",
-                    stripText(entry.body || ""),
-                    tags.join(" ")
-                ].join(" ").toLowerCase();
+                const haystack = [entry.title || "", stripText(entry.body || ""), tags.join(" ")].join(" ").toLowerCase();
                 return haystack.includes(q);
             });
         }
@@ -1040,11 +549,7 @@
                 `).join("");
 
             $("tag-filter-bar").querySelectorAll(".tag-filter").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    activeTag = btn.dataset.tag;
-                    currentPage = 1;
-                    renderList();
-                });
+                btn.addEventListener("click", () => { activeTag = btn.dataset.tag; currentPage = 1; renderList(); });
             });
 
             $("active-filter").classList.toggle("visible", !!activeTag);
@@ -1061,12 +566,7 @@
             renderTagFilters();
 
             if (visible.length === 0) {
-                $("view-list").innerHTML = `
-                    <div class="empty">
-                        <div>[ ]</div>
-                        <div>조건에 맞는 일지가 없습니다.</div>
-                    </div>
-                `;
+                $("view-list").innerHTML = `<div class="empty"><div>[ ]</div><div>조건에 맞는 일지가 없습니다.</div></div>`;
             } else {
                 $("view-list").innerHTML = visible.map(entry => {
                     const tags = (entry.tags || []).map(tag => `<span class="tag">#${esc(tag)}</span>`).join("");
@@ -1091,21 +591,13 @@
 
         function renderPagination(pageCount, totalCount) {
             const el = $("pagination");
-            if (totalCount <= PAGE_SIZE) {
-                el.classList.remove("visible");
-                el.innerHTML = "";
-                return;
-            }
+            if (totalCount <= PAGE_SIZE) { el.classList.remove("visible"); el.innerHTML = ""; return; }
 
-            const pages = Array.from({ length: pageCount }, (_, index) => index + 1);
+            const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
             el.classList.add("visible");
             el.innerHTML = `
                 <button class="page-btn" type="button" data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>‹</button>
-                ${pages.map(page => `
-                    <button class="page-btn ${page === currentPage ? "active" : ""}" type="button" data-page="${page}">
-                        ${page}
-                    </button>
-                `).join("")}
+                ${pages.map(p => `<button class="page-btn ${p === currentPage ? "active" : ""}" type="button" data-page="${p}">${p}</button>`).join("")}
                 <button class="page-btn" type="button" data-page="${currentPage + 1}" ${currentPage === pageCount ? "disabled" : ""}>›</button>
             `;
 
@@ -1151,6 +643,7 @@
             root.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
         }
 
+        // [FIX 2] # 정규식 수정: ^#{1,2}$ 가 아니라 정확히 1개 또는 정확히 2개를 구분
         function applyHashHeadings(root) {
             const blocks = [...root.querySelectorAll("div, p")];
             let index = 0;
@@ -1159,10 +652,11 @@
                 if (block.closest("pre")) return;
 
                 const text = block.textContent.trim();
-                const match = text.match(/^(#{1,2})\s+(.+)$/);
+                // [FIX] ## 을 먼저 체크하고, # 단독(뒤에 #이 없는)을 체크
+                const match = text.match(/^(#{1,2})(?!#)\s+(.+)$/);
                 if (!match) return;
 
-                const level = match[1].length;
+                const level = match[1].length; // 1 → h2(제목), 2 → h3(부제목)
                 const heading = document.createElement(level === 1 ? "h2" : "h3");
                 heading.className = level === 1 ? "body-heading-1" : "body-heading-2";
                 heading.dataset.headingLevel = String(level);
@@ -1175,7 +669,7 @@
         function renderHeadingNav() {
             const headings = [...$("detail-body").querySelectorAll("[data-heading-level]")];
             const nav = $("heading-nav");
-            const layout = $("read-layout");
+            const layout = $("read-body-layout");
 
             if (headings.length === 0) {
                 nav.classList.add("empty");
@@ -1188,26 +682,23 @@
             layout.classList.remove("no-nav");
             nav.innerHTML = `
                 <div class="heading-nav-title">CONTENTS</div>
-                ${headings.map(heading => `
-                    <button type="button" class="level-${heading.dataset.headingLevel}" data-target="${heading.id}">
-                        ${esc(heading.textContent)}
+                ${headings.map(h => `
+                    <button type="button" class="level-${h.dataset.headingLevel}" data-target="${h.id}">
+                        ${esc(h.textContent)}
                     </button>
                 `).join("")}
             `;
 
-            nav.querySelectorAll("button[data-target]").forEach(button => {
-                button.addEventListener("click", () => {
-                    $(button.dataset.target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+            nav.querySelectorAll("button[data-target]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    $(btn.dataset.target)?.scrollIntoView({ behavior: "smooth", block: "start" });
                 });
             });
         }
 
         function renderRead() {
             const entry = entries.find(x => x.id === currentId);
-            if (!entry) {
-                showList();
-                return;
-            }
+            if (!entry) { showList(); return; }
 
             $("section-read").style.display = "block";
             $("section-edit").style.display = "none";
@@ -1252,13 +743,13 @@
         }
 
         function renderTagChips() {
-            $("tag-chips").innerHTML = editTags.map((tag, index) => `
-                <span class="tag-chip">#${esc(tag)}<button data-index="${index}" type="button">×</button></span>
+            $("tag-chips").innerHTML = editTags.map((tag, i) => `
+                <span class="tag-chip">#${esc(tag)}<button data-index="${i}" type="button">×</button></span>
             `).join("");
 
             $("tag-chips").querySelectorAll("button").forEach(btn => {
-                btn.addEventListener("click", event => {
-                    event.stopPropagation();
+                btn.addEventListener("click", e => {
+                    e.stopPropagation();
                     editTags.splice(Number(btn.dataset.index), 1);
                     renderTagChips();
                 });
@@ -1276,7 +767,7 @@
             try {
                 const res = await fetch(`${API_BASE}/api/entries`);
                 const data = await res.json();
-                entries = (data.entries || []).filter(entry => entry.id);
+                entries = (data.entries || []).filter(e => e.id);
                 entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                 renderList();
             } catch {
@@ -1293,36 +784,27 @@
                 },
                 body: JSON.stringify({ entries })
             });
-
             if (!res.ok) throw new Error("save failed");
         }
 
         function cleanEditorBody() {
             const editor = $("editor-body");
-            if (editor.innerHTML === "<br>" || editor.innerHTML.trim() === "") {
-                editor.innerHTML = "";
-            }
+            if (editor.innerHTML === "<br>" || editor.innerHTML.trim() === "") editor.innerHTML = "";
         }
 
         $("tag-input-row").addEventListener("click", () => $("tag-input").focus());
 
-        $("tag-input").addEventListener("keydown", event => {
-            const val = event.target.value;
-            if (event.key === "Enter" || event.key === ",") {
-                event.preventDefault();
-                addTag(val);
-                event.target.value = "";
-            } else if (event.key === "Backspace" && !val && editTags.length) {
-                editTags.pop();
-                renderTagChips();
+        $("tag-input").addEventListener("keydown", e => {
+            const val = e.target.value;
+            if (e.key === "Enter" || e.key === ",") {
+                e.preventDefault(); addTag(val); e.target.value = "";
+            } else if (e.key === "Backspace" && !val && editTags.length) {
+                editTags.pop(); renderTagChips();
             }
         });
 
-        $("tag-input").addEventListener("blur", event => {
-            if (event.target.value.trim()) {
-                addTag(event.target.value);
-                event.target.value = "";
-            }
+        $("tag-input").addEventListener("blur", e => {
+            if (e.target.value.trim()) { addTag(e.target.value); e.target.value = ""; }
         });
 
         $("editor-body").addEventListener("input", cleanEditorBody);
@@ -1330,10 +812,8 @@
         $("btn-code-block").addEventListener("click", () => {
             const editor = $("editor-body");
             editor.focus();
-
             const pre = document.createElement("pre");
             pre.textContent = "";
-
             const after = document.createElement("div");
             after.innerHTML = "<br>";
 
@@ -1343,7 +823,6 @@
                 range.deleteContents();
                 range.insertNode(after);
                 range.insertNode(pre);
-
                 const newRange = document.createRange();
                 newRange.setStart(pre, 0);
                 newRange.collapse(true);
@@ -1355,23 +834,18 @@
             }
         });
 
-        $("editor-body").addEventListener("keydown", function (event) {
+        $("editor-body").addEventListener("keydown", function(e) {
             const sel = window.getSelection();
             if (!sel.rangeCount) return;
-
             let node = sel.anchorNode;
             let pre = null;
             while (node && node !== this) {
-                if (node.nodeName === "PRE") {
-                    pre = node;
-                    break;
-                }
+                if (node.nodeName === "PRE") { pre = node; break; }
                 node = node.parentNode;
             }
             if (!pre) return;
-
-            if (event.key === "Escape") {
-                event.preventDefault();
+            if (e.key === "Escape") {
+                e.preventDefault();
                 const p = document.createElement("div");
                 p.innerHTML = "<br>";
                 pre.parentNode.insertBefore(p, pre.nextSibling);
@@ -1388,54 +862,31 @@
         $("btn-edit").addEventListener("click", () => renderEdit(currentId));
         $("btn-cancel").addEventListener("click", () => currentId ? renderRead() : showList());
 
-        $("search-input").addEventListener("input", () => {
-            currentPage = 1;
-            renderList();
-        });
-
-        $("clear-filter").addEventListener("click", () => {
-            activeTag = "";
-            currentPage = 1;
-            renderList();
-        });
+        $("search-input").addEventListener("input", () => { currentPage = 1; renderList(); });
+        $("clear-filter").addEventListener("click", () => { activeTag = ""; currentPage = 1; renderList(); });
 
         $("btn-save").addEventListener("click", async () => {
             const title = $("editor-title").value.trim();
+            if (!title) { toast("제목을 입력해주세요."); return; }
 
+            const tagInput = $("tag-input");
+            if (tagInput.value.trim()) { addTag(tagInput.value); tagInput.value = ""; }
+
+            // hljs 클래스 제거 후 저장
             const editorClone = $("editor-body").cloneNode(true);
             editorClone.querySelectorAll("pre code").forEach(codeEl => {
                 const plain = codeEl.textContent;
-                const pre = codeEl.parentElement;
-                pre.textContent = plain;
+                codeEl.parentElement.textContent = plain;
             });
             const body = editorClone.innerHTML;
-            if (!title) {
-                toast("제목을 입력해주세요.");
-                return;
-            }
-
-            const tagInput = $("tag-input");
-            if (tagInput.value.trim()) {
-                addTag(tagInput.value);
-                tagInput.value = "";
-            }
 
             const now = Date.now();
             if (currentId) {
-                entries = entries.map(entry => entry.id === currentId
-                    ? { ...entry, title, body, tags: [...editTags], updatedAt: now }
-                    : entry
-                );
+                entries = entries.map(e => e.id === currentId
+                    ? { ...e, title, body, tags: [...editTags], updatedAt: now } : e);
             } else {
                 currentId = String(now);
-                entries.unshift({
-                    id: currentId,
-                    title,
-                    body,
-                    tags: [...editTags],
-                    createdAt: now,
-                    updatedAt: now
-                });
+                entries.unshift({ id: currentId, title, body, tags: [...editTags], createdAt: now, updatedAt: now });
             }
 
             try {
@@ -1456,7 +907,7 @@
         $("modal-cancel").addEventListener("click", () => $("modal").classList.remove("open"));
 
         $("modal-confirm").addEventListener("click", async () => {
-            entries = entries.filter(entry => entry.id !== currentId);
+            entries = entries.filter(e => e.id !== currentId);
             try {
                 await save();
                 $("modal").classList.remove("open");
@@ -1467,10 +918,8 @@
             }
         });
 
-        $("modal").addEventListener("click", event => {
-            if (event.target === $("modal")) {
-                $("modal").classList.remove("open");
-            }
+        $("modal").addEventListener("click", e => {
+            if (e.target === $("modal")) $("modal").classList.remove("open");
         });
 
         $("btn-login").addEventListener("click", async () => {
@@ -1480,12 +929,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ password: $("pw-input").value })
                 });
-
-                if (!res.ok) {
-                    toast("비밀번호가 틀렸습니다.");
-                    return;
-                }
-
+                if (!res.ok) { toast("비밀번호가 틀렸습니다."); return; }
                 const data = await res.json();
                 sessionStorage.setItem("devlog_auth", "true");
                 sessionStorage.setItem("devlog_token", data.token);
@@ -1498,9 +942,7 @@
             }
         });
 
-        $("pw-input").addEventListener("keydown", event => {
-            if (event.key === "Enter") $("btn-login").click();
-        });
+        $("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-login").click(); });
 
         (() => {
             if (sessionStorage.getItem("devlog_auth") === "true" && sessionStorage.getItem("devlog_token")) {
@@ -1513,5 +955,4 @@
         })();
     </script>
 </body>
-
 </html>
