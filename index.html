@@ -726,7 +726,7 @@
 
             let dateStr = fmtDate(entry.createdAt);
             if (entry.updatedAt !== entry.createdAt) {
-                dateStr += `<span style="color:var(--text3);margin-left:10px">(수정됨)</span>`;
+                dateStr += `<span style="color:var(--text3);margin-left:10px">(수정됨)${fmtDate(entry.updatedAt)}</span>`;
             }
 
             $("detail-date").innerHTML = dateStr;
