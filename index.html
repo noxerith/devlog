@@ -902,14 +902,28 @@
             });
             const body = editorClone.innerHTML;
 
+            const existing = currentId ? entries.find(e => e.id === currentId) : null;
+            const dateVal = $("editor-date").value;
+            let createdAt = existing ? existing.createdAt : Date.now();
+            if (dateVal) {
+                const d = new Date(dateVal + "T12:00:00");
+                if (existing) {
+                    const orig = new Date(existing.createdAt);
+                    d.setHours(orig.getHours(), orig.getMinutes(), orig.getSeconds(), orig.getMilliseconds());
+                }
+                createdAt = d.getTime();
+            }
+
             const now = Date.now();
             if (currentId) {
                 entries = entries.map(e => e.id === currentId
-                    ? { ...e, title, body, tags: [...editTags], updatedAt: now } : e);
+                    ? { ...e, title, body, tags: [...editTags], createdAt, updatedAt: now } : e);
             } else {
                 currentId = String(now);
-                entries.unshift({ id: currentId, title, body, tags: [...editTags], createdAt: now, updatedAt: now });
+                entries.unshift({ id: currentId, title, body, tags: [...editTags], createdAt, updatedAt: now });
             }
+
+            entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
             try {
                 await save();
