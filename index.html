@@ -243,12 +243,17 @@
         }
         #editor-title::placeholder { color: var(--text3); }
 
-        #editor-date {
-            background: var(--bg2); border: 1px solid var(--border); border-radius: 4px;
-            color: var(--text2); font-family: inherit; font-size: 12px;
-            padding: 8px 10px; margin-bottom: 16px; outline: none;
+        .editor-date-display {
+            font-size: 11px; color: var(--text3); letter-spacing: .08em;
+            margin-bottom: 20px; cursor: pointer; display: inline-block; user-select: none;
+            transition: color .15s;
         }
-        #editor-date:focus { border-color: var(--border2); }
+        .editor-date-display:hover { color: var(--accent); }
+
+        #editor-date {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
         
         #editor-body {
             width: 100%; min-height: 300px; background: var(--bg2);
