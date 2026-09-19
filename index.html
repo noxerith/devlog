@@ -463,6 +463,7 @@
 
         <div id="section-edit">
             <input id="editor-title" placeholder="제목" autocomplete="off">
+            <div class="editor-date-display" id="editor-date-display"></div>
             <input type="date" id="editor-date" autocomplete="off">
             <div class="editor-toolbar">
                 <button type="button" id="btn-code-block">{ } 코드 블록</button>
@@ -753,7 +754,9 @@
             $("section-read").style.display = "none";
             $("section-edit").style.display = "block";
             $("editor-title").value = entry ? entry.title : "";
-            $("editor-date").value = fmtDate(entry ? entry.createdAt : Date.now());
+            const initDate = fmtDate(entry ? entry.createdAt : Date.now());
+            $("editor-date").value = initDate;
+            $("editor-date-display").textContent = initDate;
             $("editor-body").innerHTML = entry ? entry.body : "";
             $("editor-body").setAttribute("data-placeholder",
                 "오늘의 개발 일지를 작성하세요.\n\n버그 픽스, 새 기능, 배운 것, 막힌 부분을 자유롭게 기록해보세요."
