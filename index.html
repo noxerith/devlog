@@ -856,16 +856,16 @@
                 editor.appendChild(pre);
                 editor.appendChild(after);
             }
+        });
 
-            $("editor-date-display").addEventListener("click", () => {
-                const input = $("editor-date");
-                if (typeof input.showPicker === "function") input.showPicker();
-                else { input.focus(); input.click(); }
-            });
+        $("editor-date-display").addEventListener("click", () => {
+            const input = $("editor-date");
+            if (typeof input.showPicker === "function") input.showPicker();
+            else { input.focus(); input.click(); }
+        });
 
-            $("editor-date").addEventListener("change", () => {
-                $("editor-date-display").textContent = $("editor-date").value || fmtDate(Date.now());
-            });
+        $("editor-date").addEventListener("change", () => {
+            $("editor-date-display").textContent = $("editor-date").value || fmtDate(Date.now());
         });
 
         $("editor-body").addEventListener("keydown", function(e) {
@@ -938,7 +938,7 @@
                     ? { ...e, title, body, tags: [...editTags], createdAt, updatedAt: now } : e);
             } else {
                 currentId = String(now);
-                entries.unshift({ id: currentId, title, body, tags: [...editTags], createdAt, updatedAt: now });
+                entries.unshift({ id: currentId, title, body, tags: [...editTags], createdAt, updatedAt: createdAt });
             }
 
             entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
