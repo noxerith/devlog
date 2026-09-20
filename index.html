@@ -885,7 +885,7 @@
                 range.deleteContents();
 
                 const br = document.createElement("br");
-                const marker = document.createTextNode("\u200B");
+                const marker = document.createTextNode("\u00A0");
 
                 // 먼저 <br> 삽입
                 range.insertNode(br);
@@ -1001,6 +1001,7 @@
                 });
 
                 const codeText = temp.textContent
+                    .replace(/\u00A0/g, "")
                     .replace(/\u200B/g, "")
                     .replace(/\r\n/g, "\n")
                     .replace(/\r/g, "\n");
