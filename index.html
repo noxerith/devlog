@@ -916,15 +916,22 @@
 
             e.preventDefault();
             const cd = e.clipboardData || window.clipboardData;
-            let text = cd.getData("text/plain") || "";
+            const plainText = cd.getData("text/plain") || "";
             const html = cd.getData("text/html");
 
-            if (html && !/\n/.test(text)) {
+            let text = plainText;
+
+            if (html) {
                 const tmp = document.createElement("div");
                 tmp.innerHTML = html;
                 tmp.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
                 tmp.querySelectorAll("div, p, tr, li").forEach(el => el.append("\n"));
-                text = tmp.textContent;
+                const htmlText = tmp.textContent;
+
+                // plain text보다 html 쪽에 줄바꿈이 더 많이 남아있으면 그걸 사용
+                const plainLines = (plainText.match(/\n/g) || []).length;
+                const htmlLines = (htmlText.match(/\n/g) || []).length;
+                if (htmlLines > plainLines) text = htmlText;
             }
 
             text = text.replace(/\r\n?/g, "\n").replace(/\n+$/, "");
