@@ -915,7 +915,20 @@
             if (!pre) return;
 
             e.preventDefault();
-            const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+            const cd = e.clipboardData || window.clipboardData;
+            let text = cd.getData("text/plain") || "";
+            const html = cd.getData("text/html");
+
+            if (html && !/\n/.test(text)) {
+                const tmp = document.createElement("div");
+                tmp.innerHTML = html;
+                tmp.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
+                tmp.querySelectorAll("div, p, tr, li").forEach(el => el.append("\n"));
+                text = tmp.textContent;
+            }
+
+            text = text.replace(/\r\n?/g, "\n").replace(/\n+$/, "");
+
             const range = sel.getRangeAt(0);
             range.deleteContents();
             const textNode = document.createTextNode(text);
