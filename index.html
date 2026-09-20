@@ -974,10 +974,23 @@
             if (tagInput.value.trim()) { addTag(tagInput.value); tagInput.value = ""; }
 
             const editorClone = $("editor-body").cloneNode(true);
-            editorClone.querySelectorAll("pre code").forEach(codeEl => {
-                const plain = codeEl.textContent;
-                codeEl.parentElement.textContent = plain;
+
+            editorClone.querySelectorAll("pre").forEach(pre => {
+            // 현재 코드블록에 들어있는 순수 텍스트를 가져옴
+                const codeText = pre.textContent
+                .replace(/\r\n?/g, "\n");
+
+                // 코드블록 내부를 명시적으로 <code>로 만들고
+                // 줄바꿈/탭은 HTML entity로 저장
+                const codeEl = document.createElement("code");
+                codeEl.innerHTML = esc(codeText)
+                    .replace(/\n/g, "&#10;")
+                    .replace(/\t/g, "&#9;");
+
+                pre.innerHTML = "";
+                pre.appendChild(codeEl);
             });
+
             const body = editorClone.innerHTML;
 
             const existing = currentId ? entries.find(e => e.id === currentId) : null;
