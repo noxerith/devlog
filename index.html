@@ -878,16 +878,23 @@
                 node = node.parentNode;
             }
             if (!pre) return;
-            if (e.key === "Enter") {                            // ← 추가
+            if (e.key === "Enter") {
                 e.preventDefault();
+
                 const range = sel.getRangeAt(0);
                 range.deleteContents();
-                const nl = document.createTextNode("\n");
-                range.insertNode(nl);
-                range.setStartAfter(nl);
-                range.collapse(true);
+
+                const textNode = document.createTextNode("\n");
+                range.insertNode(textNode);
+
+                // 줄바꿈 뒤에 커서를 확실하게 위치시킨다.
+                const newRange = document.createRange();
+                newRange.setStart(textNode, textNode.length);
+                newRange.collapse(true);
+
                 sel.removeAllRanges();
-                sel.addRange(range);
+                sel.addRange(newRange);
+
                 return;
             }
             if (e.key === "Escape") {
