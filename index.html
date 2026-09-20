@@ -878,6 +878,18 @@
                 node = node.parentNode;
             }
             if (!pre) return;
+            if (e.key === "Tab") {
+                e.preventDefault();
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const tabNode = document.createTextNode("    ");
+                range.insertNode(tabNode);
+                range.setStartAfter(tabNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                return;
+            }
             if (e.key === "Escape") {
                 e.preventDefault();
                 const p = document.createElement("div");
