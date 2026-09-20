@@ -913,49 +913,54 @@
         $("editor-body").addEventListener("paste", function(e) {
             const sel = window.getSelection();
             if (!sel.rangeCount) return;
+
             let node = sel.anchorNode;
             let pre = null;
+
             while (node && node !== this) {
-                if (node.nodeName === "PRE") { pre = node; break; }
+                if (node.nodeName === "PRE") {
+                    pre = node;
+                    break;
+                }
                 node = node.parentNode;
             }
+
+            // 코드블록 안이 아니면 브라우저 기본 붙여넣기 사용
             if (!pre) return;
 
             e.preventDefault();
-            const cd = e.clipboardData || window.clipboardData;
-            const plainText = cd.getData("text/plain") || "";
-            const html = cd.getData("text/html");
 
-            let text = plainText;
-
-            if (html) {
-                const tmp = document.createElement("div");
-                tmp.style.position = "fixed";
-                tmp.style.left = "-9999px";
-                tmp.style.top = "0";
-                tmp.style.whiteSpace = "pre-wrap";
-                tmp.innerHTML = html;
-                document.body.appendChild(tmp);
-
-                // innerText는 실제 렌더링(block 요소 줄바꿈 등)을 기준으로 줄바꿈을 복원해줌
-                const htmlText = tmp.innerText || tmp.textContent;
-                document.body.removeChild(tmp);
-
-                const plainLines = (plainText.match(/\n/g) || []).length;
-                const htmlLines = (htmlText.match(/\n/g) || []).length;
-                if (htmlLines > plainLines) text = htmlText;
-            }
-
-            text = text.replace(/\r\n?/g, "\n").replace(/\n+$/, "");
+            const text = (e.clipboardData || window.clipboardData)
+                .getData("text/plain")
+                .replace(/\r\n/g, "\n")
+                .replace(/\r/g, "\n")
+                .replace(/\n+$/, "");
 
             const range = sel.getRangeAt(0);
             range.deleteContents();
-            const textNode = document.createTextNode(text);
-            range.insertNode(textNode);
-            range.setStartAfter(textNode);
-            range.collapse(true);
+
+            const fragment = document.createDocumentFragment();
+            const lines = text.split("\n");
+
+            lines.forEach((line, index) => {
+                // 한 줄의 내용을 그대로 텍스트로 넣는다.
+                fragment.appendChild(document.createTextNode(line));
+
+                // 줄바꿈은 실제 <br>로 만든다.
+                if (index < lines.length - 1) {
+                    fragment.appendChild(document.createElement("br"));
+                }
+            });
+
+            range.insertNode(fragment);
+
+            // 붙여넣은 내용의 마지막으로 커서 이동
+            const newRange = document.createRange();
+            newRange.selectNodeContents(pre);
+            newRange.collapse(false);
+
             sel.removeAllRanges();
-            sel.addRange(range);
+            sel.addRange(newRange);
         });
         
         $("logo").addEventListener("click", () => {
@@ -983,17 +988,18 @@
             const editorClone = $("editor-body").cloneNode(true);
 
             editorClone.querySelectorAll("pre").forEach(pre => {
-                // 코드블록의 화면용 span/HTML 구조를 전부 제거하고
-                // 실제 텍스트만 가져온다.
-                const codeText = pre.textContent
+                const temp = pre.cloneNode(true);
+
+                // 붙여넣기에서 만든 <br>을 실제 줄바꿈 문자로 변환
+                temp.querySelectorAll("br").forEach(br => {
+                    br.replaceWith("\n");
+                });
+
+                const codeText = temp.textContent
                     .replace(/\r\n/g, "\n")
                     .replace(/\r/g, "\n");
-
+            
                 const codeEl = document.createElement("code");
-
-                // 중요:
-                // innerHTML이 아니라 textContent로 넣는다.
-                // 그러면 복사한 코드의 줄바꿈이 그대로 유지된다.
                 codeEl.textContent = codeText;
 
                 pre.innerHTML = "";
