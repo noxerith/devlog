@@ -884,13 +884,17 @@
                 const range = sel.getRangeAt(0);
                 range.deleteContents();
 
-                // 줄바꿈
                 const br = document.createElement("br");
-                range.insertNode(br);
+                const marker = document.createTextNode("\u200B");
 
-                // 모바일 브라우저에서 커서를 확실히 <br> 뒤로 이동
+                // 먼저 <br> 삽입
+                range.insertNode(br);
+                // <br> 바로 뒤에 marker 삽입
+                br.parentNode.insertBefore(marker, br.nextSibling);
+
+                 // marker 뒤에 커서 배치
                 const newRange = document.createRange();
-                newRange.setStartAfter(br);
+                newRange.setStart(marker, 1);
                 newRange.collapse(true);
 
                 sel.removeAllRanges();
