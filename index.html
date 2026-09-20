@@ -903,6 +903,29 @@
             }
         });
 
+        $("editor-body").addEventListener("paste", function(e) {
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+            let node = sel.anchorNode;
+            let pre = null;
+            while (node && node !== this) {
+                if (node.nodeName === "PRE") { pre = node; break; }
+                node = node.parentNode;
+            }
+            if (!pre) return;
+
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            const textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+            range.setStartAfter(textNode);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+
         $("logo").addEventListener("click", () => {
             activeTag = "";
             $("search-input").value = "";
