@@ -886,17 +886,11 @@
 
                 // 줄바꿈
                 const br = document.createElement("br");
-
-                // 모바일 브라우저에서 커서가 확실히 다음 줄로 이동하도록
-                // 보이지 않는 문자 하나를 추가
-                const marker = document.createTextNode("\u200B");
-
                 range.insertNode(br);
-                range.insertNode(marker);
 
-                // 보이지 않는 문자 뒤에 커서 위치
+                // 모바일 브라우저에서 커서를 확실히 <br> 뒤로 이동
                 const newRange = document.createRange();
-                newRange.setStart(marker, 1);
+                newRange.setStartAfter(br);
                 newRange.collapse(true);
 
                 sel.removeAllRanges();
