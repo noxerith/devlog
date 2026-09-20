@@ -923,12 +923,17 @@
 
             if (html) {
                 const tmp = document.createElement("div");
+                tmp.style.position = "fixed";
+                tmp.style.left = "-9999px";
+                tmp.style.top = "0";
+                tmp.style.whiteSpace = "pre-wrap";
                 tmp.innerHTML = html;
-                tmp.querySelectorAll("br").forEach(br => br.replaceWith("\n"));
-                tmp.querySelectorAll("div, p, tr, li").forEach(el => el.append("\n"));
-                const htmlText = tmp.textContent;
+                document.body.appendChild(tmp);
 
-                // plain text보다 html 쪽에 줄바꿈이 더 많이 남아있으면 그걸 사용
+                // innerText는 실제 렌더링(block 요소 줄바꿈 등)을 기준으로 줄바꿈을 복원해줌
+                const htmlText = tmp.innerText || tmp.textContent;
+                document.body.removeChild(tmp);
+
                 const plainLines = (plainText.match(/\n/g) || []).length;
                 const htmlLines = (htmlText.match(/\n/g) || []).length;
                 if (htmlLines > plainLines) text = htmlText;
@@ -945,7 +950,7 @@
             sel.removeAllRanges();
             sel.addRange(range);
         });
-
+        
         $("logo").addEventListener("click", () => {
             activeTag = "";
             $("search-input").value = "";
