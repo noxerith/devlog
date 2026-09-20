@@ -884,12 +884,11 @@
                 const range = sel.getRangeAt(0);
                 range.deleteContents();
 
-                const textNode = document.createTextNode("\n");
-                range.insertNode(textNode);
+                const br = document.createElement("br");
+                range.insertNode(br);
 
-                // 줄바꿈 뒤에 커서를 확실하게 위치시킨다.
                 const newRange = document.createRange();
-                newRange.setStart(textNode, textNode.length);
+                newRange.setStartAfter(br);
                 newRange.collapse(true);
 
                 sel.removeAllRanges();
