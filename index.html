@@ -983,13 +983,21 @@
             const editorClone = $("editor-body").cloneNode(true);
 
             editorClone.querySelectorAll("pre").forEach(pre => {
-                // 코드블록 안에 <code>가 없으면 만들어준다.
-                if (!pre.querySelector("code")) {
-                    const codeEl = document.createElement("code");
-                    codeEl.textContent = pre.textContent;
-                    pre.innerHTML = "";
-                    pre.appendChild(codeEl);
-                }
+                // 코드블록의 화면용 span/HTML 구조를 전부 제거하고
+                // 실제 텍스트만 가져온다.
+                const codeText = pre.textContent
+                    .replace(/\r\n/g, "\n")
+                    .replace(/\r/g, "\n");
+
+                const codeEl = document.createElement("code");
+
+                // 중요:
+                // innerHTML이 아니라 textContent로 넣는다.
+                // 그러면 복사한 코드의 줄바꿈이 그대로 유지된다.
+                codeEl.textContent = codeText;
+
+                pre.innerHTML = "";
+                pre.appendChild(codeEl);
             });
 
             const body = editorClone.innerHTML;
