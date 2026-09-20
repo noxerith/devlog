@@ -467,6 +467,7 @@
             <input type="date" id="editor-date" autocomplete="off">
             <div class="editor-toolbar">
                 <button type="button" id="btn-code-block">{ } 코드 블록</button>
+                <button type="button" id="btn-indent">⇥ 들여쓰기</button>
             </div>
             <div id="editor-body" contenteditable="true" spellcheck="false"></div>
             <div class="tag-input-row" id="tag-input-row">
@@ -866,6 +867,21 @@
 
         $("editor-date").addEventListener("change", () => {
             $("editor-date-display").textContent = $("editor-date").value || fmtDate(Date.now());
+        });
+
+        $("btn-indent").addEventListener("mousedown", e => e.preventDefault());
+        $("btn-indent").addEventListener("click", () => {
+            const editor = $("editor-body");
+            const sel = window.getSelection();
+            if (!sel.rangeCount || !editor.contains(sel.anchorNode)) { editor.focus(); return; }
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            const tabNode = document.createTextNode("    ");
+            range.insertNode(tabNode);
+            range.setStartAfter(tabNode);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
         });
 
         $("editor-body").addEventListener("keydown", function(e) {
