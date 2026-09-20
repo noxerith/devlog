@@ -878,13 +878,13 @@
                 node = node.parentNode;
             }
             if (!pre) return;
-            if (e.key === "Tab") {
+            if (e.key === "Enter") {                            // ← 추가
                 e.preventDefault();
                 const range = sel.getRangeAt(0);
                 range.deleteContents();
-                const tabNode = document.createTextNode("    ");
-                range.insertNode(tabNode);
-                range.setStartAfter(tabNode);
+                const nl = document.createTextNode("\n");
+                range.insertNode(nl);
+                range.setStartAfter(nl);
                 range.collapse(true);
                 sel.removeAllRanges();
                 sel.addRange(range);
