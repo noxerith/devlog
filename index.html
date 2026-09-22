@@ -793,7 +793,6 @@
                 const data = await res.json();
                 entries = (data.entries || []).filter(e => e.id);
                 entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                renderList();
             } catch {
                 toast("데이터를 불러오지 못했습니다.");
             }
