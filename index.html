@@ -885,18 +885,22 @@
                 range.deleteContents();
 
                 const br = document.createElement("br");
-                const marker = document.createTextNode("\u00A0");
-
-                // 먼저 <br> 삽입
                 range.insertNode(br);
-                // <br> 바로 뒤에 marker 삽입
-                br.parentNode.insertBefore(marker, br.nextSibling);
 
-                 // marker 뒤에 커서 배치
+                // 이 br 뒤에 아무것도 없으면(=pre의 맨 끝이면)
+                // filler br을 하나 더 넣어야 브라우저가 빈 줄을 실제로 그려줌
+                let cursorTarget;
+                if (!br.nextSibling) {
+                    const filler = document.createElement("br");
+                    br.parentNode.insertBefore(filler, br.nextSibling);
+                    cursorTarget = filler;
+                } else {
+                    cursorTarget = br.nextSibling;
+                }
+
                 const newRange = document.createRange();
-                newRange.setStart(marker, 1);
+                newRange.setStartBefore(cursorTarget);
                 newRange.collapse(true);
-
                 sel.removeAllRanges();
                 sel.addRange(newRange);
 
@@ -1001,10 +1005,9 @@
                 });
 
                 const codeText = temp.textContent
-                    .replace(/\u00A0/g, "")
-                    .replace(/\u200B/g, "")
                     .replace(/\r\n/g, "\n")
                     .replace(/\r/g, "\n");
+                    .replace(/\n+$/, "");
             
                 const codeEl = document.createElement("code");
                 codeEl.textContent = codeText;
